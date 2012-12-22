@@ -1,66 +1,60 @@
 app = require('express').createServer()
-# mongo = null
 mongourl = null
 
-############ mongodb configure
+############ Middleware
+
+app.use require('express').bodyParser()
+
+############ Configure
+
 app.configure 'development', ->
-  mongourl = "mongodb://#{obj.hostname}:#{obj.port}/#{obj.db}"
-  # mongo = 
-  #   "hostname": "localhost",
-  #   "port": 27017,
-  #   "username": "",
-  #   "password": "",
-  #   "name": "",
-  #   "db": "db"
+  mongourl = "mongodb://localhost:27017/db"
 app.configure 'production', ->
   mongourl = process.env.MONGOHQ_URL
-  # env = JSON.parse process.env.VCAP_SERVICES
-  # mongo = env['mongodb-1.8'][0]['credentials']
-
-# generate_mongo_url = (obj) ->
-#   obj.hostname = obj.hostname or 'localhost'
-#   obj.port = obj.port or 27017
-#   obj.db = obj.db or 'test'
-#   if obj.username and obj.password
-#     "mongodb://#{obj.username}:obj.password@#{obj.hostname}:#{obj.port}/#{obj.db}"
-#   else
-#     "mongodb://#{obj.hostname}:#{obj.port}/#{obj.db}"
-
-# mongourl = generate_mongo_url mongo
 
 ############ Visit mongodb
 
-record_visit = (req, res) ->
+recordScore = (req, res) ->
   # Connect to the DB and auth
   require('mongodb').connect mongourl, (err, conn) ->
-    conn.collection 'ips', (err, coll) ->
+    conn.collection 'scores', (err, coll) ->
       # Simple object to insert: ip address and date
-      object_to_insert = ip: req.connection.remoteAddress, ts: new Date()
+      # object_to_insert = ip: req.connection.remoteAddress, ts: new Date()
+      object_to_insert =
+        "ip": req.connection.remoteAddress,
+        "user-agent": req.header("User-Agent"),
+        "log": req.body.log,
+        "mobile": req.body.mobile,
+        "name": req.body.name,
+        "ts": new Date(),
+        "score": require('score').calcScore(req.body.log)
 
       # Insert the object then print in response
       # Note the _id has been created
       coll.insert object_to_insert, safe: true, (err) ->
-        res.writeHead 200, 'Content-Type': 'text/plain'
-        res.write JSON.stringify object_to_insert
-        res.end '\n'
+        if err
+          res.send(500, code: 500, msg: err.message)
+        else
+          res.send(200, code: 200, msg: "success!")
 
-print_visits = (req, res) ->
-  # Connect to the DB and auth
+printBoard = (req, res) ->
   require('mongodb').connect mongourl, (err, conn) ->
-    conn.collection 'ips', (err, coll) ->
-      coll.find {}, limit: 10, sort: [['_id', 'desc']], (err, cursor) ->
+    conn.collection 'scores', (err, coll) ->
+      coll.find {}, limit: 10, sort: [['score', 'desc']], (err, cursor) ->
         cursor.toArray (err, items) ->
-          res.writeHead 200, 'Content-Type': 'text/plain'
-          for i in [0...items.length]
-            res.write "#{JSON.stringify(items[i])}\n"
-          res.end()
+          res.json items
 
 ############ Routes
-app.get '/', (req, res) ->
-  record_visit req, res
 
-app.get '/history', (req, res) ->
-  print_visits req, res
+app.get '/', (req, res) ->
+  res.send "Hello World!"
+
+app.post '/score', (req, res) ->
+  recordScore req, res
+
+app.get '/board', (req, res) ->
+  printBoard req, res
 
 ############ Listen
+
 app.listen process.env.VCAP_APP_PORT or 3000
