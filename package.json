@@ -1,0 +1,9 @@
+{
+  "name": "snowball-fight",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "",
+    "mongodb": "",
+    "coffee-script": ""
+  }
+}

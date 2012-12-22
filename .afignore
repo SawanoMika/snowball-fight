@@ -1,0 +1,4 @@
+# ignore local config
+config.local
+# ignore dot files
+.*
