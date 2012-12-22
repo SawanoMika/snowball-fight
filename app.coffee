@@ -1,29 +1,32 @@
 app = require('express').createServer()
-mongo = null
+# mongo = null
+mongourl = null
 
 ############ mongodb configure
 app.configure 'development', ->
-  mongo = 
-    "hostname": "localhost",
-    "port": 27017,
-    "username": "",
-    "password": "",
-    "name": "",
-    "db": "db"
+  mongourl = "mongodb://#{obj.hostname}:#{obj.port}/#{obj.db}"
+  # mongo = 
+  #   "hostname": "localhost",
+  #   "port": 27017,
+  #   "username": "",
+  #   "password": "",
+  #   "name": "",
+  #   "db": "db"
 app.configure 'production', ->
-  env = JSON.parse process.env.VCAP_SERVICES
-  mongo = env['mongodb-1.8'][0]['credentials']
+  mongourl = process.env.MONGOHQ_URL
+  # env = JSON.parse process.env.VCAP_SERVICES
+  # mongo = env['mongodb-1.8'][0]['credentials']
 
-generate_mongo_url = (obj) ->
-  obj.hostname = obj.hostname or 'localhost'
-  obj.port = obj.port or 27017
-  obj.db = obj.db or 'test'
-  if obj.username and obj.password
-    "mongodb://#{obj.username}:obj.password@#{obj.hostname}:#{obj.port}/#{obj.db}"
-  else
-    "mongodb://#{obj.hostname}:#{obj.port}/#{obj.db}"
+# generate_mongo_url = (obj) ->
+#   obj.hostname = obj.hostname or 'localhost'
+#   obj.port = obj.port or 27017
+#   obj.db = obj.db or 'test'
+#   if obj.username and obj.password
+#     "mongodb://#{obj.username}:obj.password@#{obj.hostname}:#{obj.port}/#{obj.db}"
+#   else
+#     "mongodb://#{obj.hostname}:#{obj.port}/#{obj.db}"
 
-mongourl = generate_mongo_url mongo
+# mongourl = generate_mongo_url mongo
 
 ############ Visit mongodb
 
