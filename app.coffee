@@ -1,15 +1,21 @@
-app = require('express').createServer()
+express = require 'express'
+app = express.createServer()
 mongourl = null
-
-############ Middleware
-
-app.use require('express').bodyParser()
 
 ############ Configure
 
+app.configure ->
+  app.use '/static', express.static __dirname + '/static'
+  app.use express.bodyParser()
+  app.use app.router
+
 app.configure 'development', ->
   mongourl = "mongodb://localhost:27017/db"
+  app.use express.errorHandler dumpException: true, showStack: true
+  app.set 'view options', pretty: true
+
 app.configure 'production', ->
+  app.use express.errorHandler()
   mongourl = process.env.MONGOHQ_URL
 
 ############ Visit mongodb
@@ -22,12 +28,12 @@ recordScore = (req, res) ->
       # object_to_insert = ip: req.connection.remoteAddress, ts: new Date()
       object_to_insert =
         "ip": req.connection.remoteAddress,
-        "user-agent": req.header("User-Agent"),
+        "user-agent": req.get("User-Agent"),
         "log": req.body.log,
         "mobile": req.body.mobile,
         "name": req.body.name,
         "ts": new Date(),
-        "score": require('score').calcScore(req.body.log)
+        "score": require('./score').calcScore(req.body.log)
 
       # Insert the object then print in response
       # Note the _id has been created
@@ -37,10 +43,15 @@ recordScore = (req, res) ->
         else
           res.send(200, code: 200, msg: "success!")
 
+BOARD_FIELDS =
+  'name': 1,
+  'score': 1,
+  '_id': 0
+
 printBoard = (req, res) ->
   require('mongodb').connect mongourl, (err, conn) ->
     conn.collection 'scores', (err, coll) ->
-      coll.find {}, limit: 10, sort: [['score', 'desc']], (err, cursor) ->
+      coll.find {}, fields: BOARD_FIELDS, limit: 10, sort: [['score', 'desc']], (err, cursor) ->
         cursor.toArray (err, items) ->
           res.json items
 
