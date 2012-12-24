@@ -25,11 +25,11 @@ function Item(imageSource) {
     this.fallingHeight = 24;
     this.width = 24;
     this.height = 24;
-    var OFFSET = 40;
+    var OFFSET = 46;
     this.positionX = Math.floor(Math.random() * (SCREEN_WIDTH - this.width));
     this.positionY = Math.floor(Math.random() * SCREEN_HEIGHT) - SCREEN_HEIGHT + OFFSET;
-    while (this.positionY + SCREEN_HEIGHT < -0.75 * this.positionX + SCREEN_HEIGHT
-        || this.positionY > SCREEN_HEIGHT - this.height * 4) {
+    while (this.positionY > SCREEN_HEIGHT - this.height * 4 ||
+        this.positionY < -0.75 * this.positionX + OFFSET) {
         this.positionX = Math.floor(Math.random() * (SCREEN_WIDTH - this.width));
         this.positionY = Math.floor(Math.random() * SCREEN_HEIGHT) - SCREEN_HEIGHT + OFFSET;
     }
@@ -159,7 +159,18 @@ Item.prototype.checkCollision = function (player) {
 };
 //道具种类生成器
 Item.prototype.getItemType = function () {
-    return Math.floor(Math.random() * 9);
+    var type = Math.floor(Math.random() * 9);
+    var r = Math.random();
+    if (game.stageNum <= 5) {
+        type = Math.floor(Math.random() * 9);
+    }
+    else if (game.stageNum < 12) {
+
+    }
+    else {
+
+    }
+    return type;
 }
 
 //ItemText.js 增益类物品精灵类

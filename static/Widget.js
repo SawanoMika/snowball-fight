@@ -1,6 +1,8 @@
 //LoadingDisplay.js 加载界面显示精灵类
 function LoadingDisplay(imageSource) {
-    Sprite.call(this, imageSource);
+    this.img = new Image();
+    this.img.src = IMAGE_RESOURCE_URL["image/loading.png"];
+//    Sprite.call(this, imageSource);
     this.width = 380;
     this.height = 380;
     this.positionX = 180;
@@ -9,7 +11,7 @@ function LoadingDisplay(imageSource) {
 LoadingDisplay.prototype = new Sprite();
 
 //血槽精灵类
-function HpTrough(imageSource) {
+function HpTrough(imageSource, host) {
     Sprite.call(this, imageSource);
     this.boardWidth = 44;
     this.boardHeight = 10;
@@ -17,6 +19,7 @@ function HpTrough(imageSource) {
     this.height = 6;
     this.drawLayer = 4;
 
+    this.host = host;
     this.barOffsetX = 2;
     this.barOffsetY = 2;
 }
@@ -30,7 +33,7 @@ HpTrough.prototype.update = function () {
     if (this.drawWidth != this.targetWidth) {
         this.drawWidth += (this.targetWidth < this.drawWidth ? -1 : 1);
     }
-    if (this.drawWidth <= 0) {
+    if (this.drawWidth <= 0 && this.host.isDead) {
         this.isToDisposed = true;
     }
 };
@@ -118,10 +121,8 @@ MoveMarker.prototype.setPosition = function (playerPosition) {
 //StageText.js 关卡标题精灵类
 function StageText(imageSource, stageNum) {
     Sprite.call(this, imageSource);
-//    this.width = this.targetWidth = 203;
     this.height = this.targetHeight = 67;
     this.width = this.targetWidth = 203;
-//    this.height = this.targetHeight = 80;
     this.positionX = SCREEN_WIDTH / 2 - this.width / 2 - 30;
     this.positionY = SCREEN_HEIGHT / 2 - this.height / 2;
     this.drawLayer = 9;
@@ -137,7 +138,7 @@ function StageText(imageSource, stageNum) {
     this.TEXT_INDEX_MAX = 2;
     this.isAppearing = true;
     this.isTriggleClear = false;
-    this.TOTAL_COUNT = 15;
+    this.TOTAL_COUNT = 30;
 }
 StageText.prototype = new Sprite();
 StageText.prototype.init = function () {
@@ -262,7 +263,7 @@ function AchievementBoard(imageSource, text, stageClass, score) {
     this.height = 60;
     this.positionX = 200;
     this.positionY = -this.height;
-    this.text = "获得成就："+text;
+    this.text = "获得成就：" + text;
     this.stageClass = stageClass;
     this.scoreText = "+" + score;
     this.drawLayer = 8;
@@ -373,7 +374,7 @@ GameoverGroundButton.prototype.draw = function () {
 };
 
 //GameoverScoreBoard.js 游戏结束分数精灵类
-function GameoverScoreBoard(imageSource, index, score) {
+function GameoverScoreBoard(imageSource, index, score, callback) {
     Sprite.call(this, imageSource);
     this.POSITIONX_LIST = [400, 400, 266];
     this.POSITIONY_LIST = [160, 180, 182];
@@ -389,9 +390,11 @@ function GameoverScoreBoard(imageSource, index, score) {
     this.isAppearing = true;
     this.alpha = 0;
     this.randomCount = 0;
-    this.RANDOM_TOTAL_COUNT = 30;
+    this.RANDOM_TOTAL_COUNT = 20;
     this.waitCount = 0;
-    this.WAIT_TOTAL_COUNT = 50;
+    this.WAIT_TOTAL_COUNT = 40;
+
+    this.callback = callback;
 }
 GameoverScoreBoard.prototype.draw = function () {
     mainCanvas.save();
@@ -431,5 +434,6 @@ GameoverScoreBoard.prototype.update = function () {
             this.scoreStr = "0" + this.scoreStr;
         }
         this.showText = this.scoreStr;
+        this.callback();
     }
 };

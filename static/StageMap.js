@@ -34,34 +34,34 @@ var StageInfo = new Array(999);
 StageInfo[0] = [
     {aiLevel:0, startPosition:new Point(70, 141), attackLevel:1, moveSpeedLevel:1, snowballSpeedLevel:1, MAX_HP:1000},
     {aiLevel:0, startPosition:new Point(250, 158), attackLevel:1, moveSpeedLevel:1, snowballSpeedLevel:1, MAX_HP:1000},
-    {aiLevel:1, startPosition:new Point(341, 34), attackLevel:1, moveSpeedLevel:1, snowballSpeedLevel:1, MAX_HP:1000}
+    {aiLevel:0, startPosition:new Point(341, 34), attackLevel:1, moveSpeedLevel:1, snowballSpeedLevel:1, MAX_HP:1000}
 ];
 StageInfo[1] = [
     {aiLevel:0, startPosition:new Point(290, 147), attackLevel:1, moveSpeedLevel:1, snowballSpeedLevel:1, MAX_HP:1000},
-    {aiLevel:1, startPosition:new Point(340, 47), attackLevel:1, moveSpeedLevel:1, snowballSpeedLevel:1, MAX_HP:1000},
+    {aiLevel:0, startPosition:new Point(340, 47), attackLevel:1, moveSpeedLevel:1, snowballSpeedLevel:1, MAX_HP:1000},
     {aiLevel:0, startPosition:new Point(119, 174), attackLevel:2, moveSpeedLevel:1, snowballSpeedLevel:1, MAX_HP:1250}
 ];
 StageInfo[2] = [
-    {aiLevel:1, startPosition:new Point(40, 121), attackLevel:1, moveSpeedLevel:1, snowballSpeedLevel:2, MAX_HP:1250},
+    {aiLevel:0, startPosition:new Point(40, 121), attackLevel:1, moveSpeedLevel:1, snowballSpeedLevel:2, MAX_HP:1250},
     {aiLevel:0, startPosition:new Point(250, 158), attackLevel:2, moveSpeedLevel:2, snowballSpeedLevel:1, MAX_HP:1250},
     {aiLevel:0, startPosition:new Point(341, 34), attackLevel:2, moveSpeedLevel:1, snowballSpeedLevel:1, MAX_HP:1500}
 ];
 StageInfo[3] = [
     {aiLevel:1, startPosition:new Point(70, 141), attackLevel:1, moveSpeedLevel:1, snowballSpeedLevel:1, MAX_HP:1250},
     {aiLevel:0, startPosition:new Point(250, 158), attackLevel:1, moveSpeedLevel:1, snowballSpeedLevel:1, MAX_HP:1500},
-    {aiLevel:1, startPosition:new Point(341, 44), attackLevel:2, moveSpeedLevel:2, snowballSpeedLevel:1, MAX_HP:1500},
+    {aiLevel:0, startPosition:new Point(341, 44), attackLevel:2, moveSpeedLevel:2, snowballSpeedLevel:1, MAX_HP:1500},
     {aiLevel:0, startPosition:new Point(241, 34), attackLevel:2, moveSpeedLevel:1, snowballSpeedLevel:2, MAX_HP:1500}
 ];
 StageInfo[4] = [
     {aiLevel:1, startPosition:new Point(50, 41), attackLevel:1, moveSpeedLevel:2, snowballSpeedLevel:1, MAX_HP:1500},
-    {aiLevel:1, startPosition:new Point(250, 158), attackLevel:2, moveSpeedLevel:1, snowballSpeedLevel:1, MAX_HP:1500},
+    {aiLevel:0, startPosition:new Point(250, 158), attackLevel:2, moveSpeedLevel:1, snowballSpeedLevel:1, MAX_HP:1500},
     {aiLevel:0, startPosition:new Point(341, 130), attackLevel:2, moveSpeedLevel:2, snowballSpeedLevel:1, MAX_HP:1500},
     {aiLevel:0, startPosition:new Point(241, 34), attackLevel:2, moveSpeedLevel:1, snowballSpeedLevel:2, MAX_HP:1500}
 ];
 StageInfo[5] = [
     {aiLevel:1, startPosition:new Point(70, 141), attackLevel:1, moveSpeedLevel:2, snowballSpeedLevel:1, MAX_HP:1500},
     {aiLevel:0, startPosition:new Point(250, 158), attackLevel:2, moveSpeedLevel:1, snowballSpeedLevel:1, MAX_HP:1500},
-    {aiLevel:1, startPosition:new Point(341, 34), attackLevel:2, moveSpeedLevel:2, snowballSpeedLevel:1, MAX_HP:1500},
+    {aiLevel:0, startPosition:new Point(341, 34), attackLevel:2, moveSpeedLevel:2, snowballSpeedLevel:1, MAX_HP:1500},
     {aiLevel:0, startPosition:new Point(141, 14), attackLevel:2, moveSpeedLevel:2, snowballSpeedLevel:2, MAX_HP:1750}
 ];
 StageInfo[6] = [

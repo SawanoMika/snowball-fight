@@ -5,12 +5,11 @@
     <meta charset="utf-8">
     <link href="game.css" rel="stylesheet" type="text/css">
     <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>-->
-    <script language="JavaScript" type="text/javascript">
-        if (navigator.userAgent.indexOf("Chrome") < 0) {
-            window.location = "unsupportBrowserPage.html";
-        }
-    </script>
+	
+	<script type="text/javascript" src="modernizr.custom.79046.js"></script>
     <script type="text/javascript" src="jquery.min.js"></script>
+	<script type="text/javascript" src="CheckBrowser.js"></script>
+	
     <script type="text/javascript" src="html5_game_lib.js"></script>
     <script type="text/javascript" src="StageMap.js"></script>
     <script type="text/javascript" src="SnowballFight.js"></script>
@@ -18,24 +17,12 @@
     <script type="text/javascript" src="Item.js"></script>
     <script type="text/javascript" src="Sprite.js"></script>
     <script type="text/javascript" src="AI.js"></script>
-    <script type="text/javascript" src="Score.js"></script>
-    <script type="text/javascript" src="testajax.js"></script>
+	<script type="text/javascript" src="Score.js"></script>
+    <script type="text/javascript" src="server.js"></script>
 
 </head>
 <body>
 <div id="game">
-    <div id="gameUI">
-        <!--<div id="gameStart">-->
-        <!--<h1>Snowball Fight Demo</h1>-->
-        <!--<p><a id="txtPlay" class="button" href="">Play</a></p>-->
-        <!--</div>-->
-        <!--<div id="gameMain">-->
-
-        <!--</div>-->
-        <!--<div id="gameOver">-->
-
-        <!--</div>-->
-    </div>
     <canvas id="gameCanvas" width="800" height="640"></canvas>
 </div>
 <!-- JiaThis Button BEGIN -->
@@ -63,37 +50,6 @@
 <!--</div>-->
 <!--<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1344766943527829" charset="utf-8"></script>-->
 <!--JiaThis Button END-->
-<div id="SubmitBox" style="width: 459px;display: none; ">
-    <h1 id="SubmitBoxTitle">提交分数</h1>
-    <!-- <h4 id="loginBoxHint">当前用户：huangkai</h4> -->
-    <div id="nameInput">
-        <label>昵 称 </label> <input type="text" id="usernameInput" name="username" value="" placeholder="请输入昵称">
-    </div>
-    <br>
-
-    <div id="contactInput">
-        <label>联系方式 </label> <input type="contact" id="contact" name="contact" value="" placeholder="手机，QQ均可，可不填">
-    </div>
-    <!-- br>
-             <button id="registButton" class="pageButton_center">注 册</button> -->
-    <!-- <br> -->
-    <div><img type="button" id="SubmitCancelButton" onclick="clickButCancel()" class="pageButton_left"
-              src="image/webImage/btnCancel.png"></img></div>
-    <div><img type="button" id="SubmitButton" onclick="clickButOk()" class="pageButton_right"
-              src="image/webImage/btnOk.png"></img></div>
-</div>
-<script language="javascript" type="text/javascript">
-    function clickButOk() {
-        document.getElementById("SubmitBox").style.display = "none";
-        document.getElementById("rinkingList").style.display = "block";
-    }
-    function clickButCancel() {
-        document.getElementById("SubmitBox").style.display = "none";
-    }
-    function clickButCancel2() {
-        document.getElementById("rinkingList").style.display = "none";
-    }
-</script>
 
 <div id="tree2">
     <img src="image/webImage/tree2.png" alt="无法显示请见谅">
@@ -107,73 +63,38 @@
 <div id="bell">
     <img src="image/webImage/bell.png" alt="无法显示请见谅">
 </div>
-<!-- script language="javascript" type="text/javascript">
-           if
- var getId4 = document.getElementByIdx("button4");
- if(getId4.style.display == "none"){ document.getElementByIdx("button4").style.display = "block";}
- else{document.getElementByIdx("button4").style.display = "none";  };
 
-} -->
-<div id="rinkingList">
-    <table>
+<div id="submitBox" style="width: 459px; display:none;">
+    <h1 id="submitBoxTitle">提交分数</h1>
+    <div id="nameInput">
+        <label>昵 称 </label> <input type="text" id="usernameInput" name="username" value="" placeholder="请输入昵称">
+    </div>
+    <br>
+    <div id="contactInput">
+        <label>联系方式 </label> <input type="contact" id="contact" name="contact" value="" placeholder="手机，QQ均可">
+    </div>
+
+    <div><img type="button" id="submitCancelButton" onclick="submitBoxClickCancel()" class="pageButton_left"
+              src="image/webImage/btnCancel.png"></img></div>
+    <div><img type="button" id="submitButton" onclick="submitBoxClickOk()" class="pageButton_right"
+              src="image/webImage/btnOk.png"></img></div>
+</div>
+
+
+<div id="rankList">
+    <table id="rankTable">
         <tr>
             <th>排名</th>
             <th>昵称</th>
             <th>得分</th>
         </tr>
-        <tr>
-            <td>1</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>3</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>4</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>5</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>6</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>7</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>8</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>9</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>10</td>
-            <td></td>
-            <td></td>
-        </tr>
     </table>
-    <div><img type="button" id="RinkCancelButton" onclick="clickButCancel2()" src="image/webImage/btnCancel.png"></img>
+    <div><img type="button" id="rankBackButton" onclick="rankListClickBack()" src="image/webImage/btnBack.png"></img>
     </div>
 </div>
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1723638" async=""></script>
+<!-- UY END -->
 </body>
 </html>

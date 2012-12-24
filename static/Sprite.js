@@ -84,18 +84,19 @@ function Character(imageSource) {
     //是否隐身，隐身计数变量和持续时间
     this.isInvisible = false;
     this.invisibleCount = 0;
-    this.INVISIBLE_TOTAL_COUNT = 150;   //5s
+    this.INVISIBLE_TOTAL_COUNT = 300;   //10s
     //是否冰冻
     this.isFrozen = false;
     this.frozenCount = 0;
-    this.FROZEN_TOTAL_COUNT = 90; //3s
+    this.FROZEN_TOTAL_COUNT = 60; //2s
     //是否中毒
     this.isPoisoning = false;
     this.poisoningCount = 0;
-    this.POISONING_TOTAL_COUNT = 150; //5s
+    this.POISONING_TOTAL_COUNT = 90; //3s
 
+    this.timer = null;
     //血条
-    this.hpTrough = new HpTrough(WIDGET_IMAGE_PATH);
+    this.hpTrough = new HpTrough(IMAGE_RESOURCE[WIDGET_IMAGE_PATH],this);
 }
 Character.prototype = new DynamicSprite();
 Character.prototype.draw = function () {
@@ -166,7 +167,7 @@ Character.prototype.specialStatusUpdate = function () {
     }
     //中毒状态倒计数逻辑
     if (this.isPoisoning && this.poisoningCount < this.POISONING_TOTAL_COUNT) {
-        this.hp -= 2;
+        this.hp -= Math.floor(this.MAX_HP * 0.005);
         this.poisoningCount++;
     }
     else {
@@ -209,7 +210,7 @@ Character.prototype.startForce = function () {
 Character.prototype.endForce = function (chargedForce) {
     //发射雪球
     if (this.chargeForce > 0) {
-        game.spriteGroup.add(new Snowball(WIDGET_IMAGE_PATH, {
+        game.spriteGroup.add(new Snowball(IMAGE_RESOURCE[WIDGET_IMAGE_PATH], {
             positionX:this.positionX,
             positionY:this.positionY,
             force:chargedForce || this.chargeForce,
@@ -259,6 +260,9 @@ Character.prototype.beHit = function (hitPoint, host) {
     this.hp -= hitPoint;
     if (this.hp <= 0) {
         this.die(host);
+    }
+    if (this.timer !=undefined && this.timer != null) {
+        clearTimeout(this.timer);
     }
     switch (host.attackType) {
         case this.ATTACK_TYPE_FIRE:
@@ -399,7 +403,7 @@ function Enemy(imageSource, constructInfo, hpTroughGroup) {
     this.SHORT_TIME_ACHIEVEMENT_LIST = ["DoubleKill", "TripleKill", "UltraKill", "Rampage"];
     this.SHORT_TIME_ACHIEVEMENT_CHN_LIST = ["双杀", "三杀", "四杀", "暴走"];
 
-    this.aiLevel = 1;
+    this.aiLevel = constructInfo.aiLevel;
     this.attackLevel = constructInfo.attackLevel;
     this.moveSpeedLevel = constructInfo.moveSpeedLevel;
     this.snowballSpeedLevel = constructInfo.snowballSpeedLevel;
@@ -541,7 +545,7 @@ Enemy.prototype.die = function (host) {
         }
         var score = [200, 300, 450, 650, 900, 1200, 1600, 2000];
         game.addScore("ACHIEVEMENT", this.NO_DAMAGE_ACHIEVEMENT_LIST[index_cknd]);
-        game.spriteGroup.add(new AchievementBoard(IMAGE_RESOURCE_URL[WIDGET_IMAGE_PATH],
+        game.spriteGroup.add(new AchievementBoard(IMAGE_RESOURCE[WIDGET_IMAGE_PATH],
             this.NO_DAMAGE_ACHIEVEMENT_CHN_LIST[index_cknd],
             game.stageClass, score[index_cknd]));
         game.LogList.push(new Log(EVENT_ACHIEVEMENT, {
@@ -574,7 +578,7 @@ Enemy.prototype.die = function (host) {
         }
         var score = [500, 750, 1000, 1250];
         game.addScore("ACHIEVEMENT", this.SHORT_TIME_ACHIEVEMENT_LIST[index_ckst]);
-        game.spriteGroup.add(new AchievementBoard(IMAGE_RESOURCE_URL[WIDGET_IMAGE_PATH],
+        game.spriteGroup.add(new AchievementBoard(IMAGE_RESOURCE[WIDGET_IMAGE_PATH],
             this.SHORT_TIME_ACHIEVEMENT_CHN_LIST[index_ckst],
             game.stageClass, score[index_ckst]));
         game.LogList.push(new Log(EVENT_ACHIEVEMENT, {
@@ -673,7 +677,7 @@ Snowball.prototype.update = function () {
     }
 };
 Snowball.prototype.explode = function (explodeInfo) {
-    game.spriteGroup.add(new ExplosionEffect(IMAGE_RESOURCE_URL[EXPLOSION_IMAGE_PATH],
+    game.spriteGroup.add(new ExplosionEffect(IMAGE_RESOURCE[EXPLOSION_IMAGE_PATH],
         new Point(this.positionX, this.positionY)));
     var enemies = game.enemyGroup.group;
     //雪球接触点坐标

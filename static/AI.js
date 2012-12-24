@@ -32,7 +32,7 @@ Enemy.prototype.getAIFunc = function (aiLevel) {
                     _this.timer = setTimeout((function () {
                         _this.startForce();
                         setTimeout((function () {
-                            _this.endForce(Math.random() * 90 + 10);
+                            _this.endForce(Math.random() * 50 + 40);
                         }).bind(_this), Math.floor(Math.random() * 3000) + 200);
                     }).bind(_this), Math.floor(Math.random() * 400) + 200);
                     break;
@@ -42,7 +42,7 @@ Enemy.prototype.getAIFunc = function (aiLevel) {
                     var tx = _this.positionX + _this.width / 2 + range * Math.cos(sita);
                     var ty = _this.positionY + _this.height + range * Math.sin(sita);
                     //目标是非法地点的情况，则重新计算
-                    while (tx < _this.width / 2 || ty < _this.height || ty > -0.75 * tx + SCREEN_HEIGHT) {
+                    while (tx < _this.width / 2 || ty < _this.height || ty > -0.75 * tx + SCREEN_HEIGHT-80) {
                         range = Math.floor(Math.random() * 10 + 10);
                         sita = Math.random() * 2 * Math.PI;
                         tx = _this.positionX + _this.width / 2 + range * Math.cos(sita);
@@ -97,19 +97,20 @@ Enemy.prototype.getAIFunc = function (aiLevel) {
                     var playerY = Math.floor(game.player.positionY + game.player.height);
                     var enemyX = Math.floor(_this.positionX + _this.width / 2);
                     var enemyY = Math.floor(_this.positionY + _this.height);
-                    //D1为前后修正参数
+                    //D1为前后修正参数,D2为水平修正参数
                     var D1 = Math.floor(Math.random() * 50 - 20);
+                    var D2 = 16;
                     var targetX = Math.floor((4 * (enemyY - playerY) + 3 * (playerX + enemyX)) / 6
-                        + D1 * 0.8);
+                        + D1 * 0.8 - D2 *0.8);
                     var targetY = Math.floor((4 * (playerY + enemyY) + 3 * (enemyX - playerX)) / 8
-                        + D1 * 0.6);
+                        + D1 * 0.6+D2*0.8);
                     if (targetX > 0 && targetY < _this.height) {
                         targetY = Math.floor(_this.height + 1);
                     }
                     if (targetX < _this.width/2 && targetY > 0) {
                         targetX = Math.floor(_this.width/2 + 1);
                     }
-                    if (targetY > -0.75 * targetX + SCREEN_HEIGHT - 30) {
+                    if (targetY > -0.75 * targetX + SCREEN_HEIGHT - 80) {
                         targetX = enemyX;
                         targetY = enemyY;
                     }

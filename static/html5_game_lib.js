@@ -39,8 +39,9 @@ ScreenManager.prototype.start = function () {
 
 //Sprite.js 精灵基类
 function Sprite(imageSource) {
-    this.img = new Image();
-    this.img.src = imageSource || null;
+//    this.img = new Image();
+//    this.img.src = imageSource || null;
+    this.img = imageSource;
     this.positionX = 0;
     this.positionY = 0;
     this.width = 0;
@@ -150,9 +151,9 @@ function Point(x, y) {
 }
 
 //AudioSprite.js 音频播放精灵类，用于播放音频
-function AudioSprite(src, isLoop) {
-    this.audioSprite = new Audio();
-    this.audioSprite.src = src;
+function AudioSprite(audio, isLoop) {
+    this.audioSprite = audio;
+//    this.audioSprite.src = src;
     this.audioSprite.loop = isLoop;
 }
 AudioSprite.prototype.play = function () {
@@ -173,22 +174,4 @@ function loadJs(jsFile) {
     oScript.type = "text/javascript";
     oScript.src = jsFile;
     oHead.appendChild(oScript);
-}
-
-function checkBrowser() {
-    var ua = navigator.userAgent.toLowerCase();  //获取用户端信息
-    var info = {
-        ie:/msie/.test(ua) && !/opera/.test(ua), //匹配IE浏览器
-        op:/opera/.test(ua), //匹配Opera浏览器
-        sa:/version.*safari/.test(ua), //匹配Safari浏览器
-        ch:/chrome/.test(ua), //匹配Chrome浏览器
-        ff:/gecko/.test(ua) && !/webkit/.test(ua)   //匹配Firefox浏览器
-    };
-    if (info.ie || info.op || info.sa) {
-        alert("对不起，您的浏览器不支持本游戏。请使用Chrome浏览器！");
-    }
-//    else if (info.ff) {
-//        alert("检测到您的浏览器为火狐浏览器，可能试玩过程中会卡哦，建议使用Chrome浏览器！");
-//    }
-    // (info.ch) && alert("Chrome浏览器");
 }

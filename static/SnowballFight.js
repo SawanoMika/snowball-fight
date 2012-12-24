@@ -109,6 +109,8 @@ var mainCanvas;
 var screenManager;
 //加载资源界面
 var loadingScreen;
+//故事介绍界面
+var storyScreen;
 //游戏起始界面
 var startScreen;
 //游戏主界面
@@ -117,7 +119,7 @@ var game;
 //LoadingScreen.js 加载界面屏幕类
 function LoadingScreen() {
     GameComponent.call(this);
-    this.loadingDisplay = new LoadingDisplay(IMAGE_RESOURCE_URL[LOADING_IMAGE_PATH]);
+    this.loadingDisplay = new LoadingDisplay(IMAGE_RESOURCE[LOADING_IMAGE_PATH]);
     this.showText = "";
     this.loadedCompleteCount = 0;
     this.loadedTotalCount = SOUND_RESOURCE_NAME.length + IMAGE_RESOURCE_NAME.length;
@@ -151,7 +153,9 @@ LoadingScreen.prototype.loadResource = function () {
     for (var i = 0; i < SOUND_RESOURCE_NAME.length; i++) {
         var audio = new Audio();
         audio.src = SOUND_RESOURCE_URL[SOUND_RESOURCE_NAME[i]];
-        SOUND_RESOURCE[i] = audio;
+        if (SOUND_RESOURCE_NAME[i] == "sound/bgm.mp3")
+            audio.loop = true;
+        SOUND_RESOURCE[SOUND_RESOURCE_NAME[i]] = audio;
         audio.addEventListener("canplaythrough", function () {
             loadingScreen.loadedCompleteCount++;
         });
@@ -159,13 +163,11 @@ LoadingScreen.prototype.loadResource = function () {
     }
     for (var j = 0; j < IMAGE_RESOURCE_NAME.length; j++) {
         var image = new Image();
+        image.src = IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[j]];
         image.addEventListener("load", function () {
             loadingScreen.loadedCompleteCount++;
         }, false);
-        image.src = IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[j]];
-//        $(window).load(IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[j]],function(){
-//            loadingScreen.loadedCompleteCount++;
-//        });
+        IMAGE_RESOURCE[IMAGE_RESOURCE_NAME[j]] = image;
         this.resourceList.push(image);
     }
 };
@@ -174,24 +176,67 @@ LoadingScreen.prototype.loadResource = function () {
 function StartScreen() {
     GameComponent.call(this);
     this.index = 0;
-    this.background = new Background(IMAGE_RESOURCE_URL[STARTSCREEN_IMAGE_PATH], true);
+    this.background = new Background(IMAGE_RESOURCE[STARTSCREEN_IMAGE_PATH], true);
 }
 StartScreen.prototype = new GameComponent();
 StartScreen.prototype.draw = function () {
-    mainCanvas.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    mainCanvas.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT + 40);
     this.background.draw();
 };
 StartScreen.prototype.initialize = function () {
     $(window).click(startScreen.mouseClickEvent);
 };
 StartScreen.prototype.mouseClickEvent = function (e) {
-    var btnX = 324, btnY = 376, btnW = btnH = 160;
+    var btnStartX = 288, btnStartY = 417, btnStartW = 224, btnStartH = 76;
+    var btnAboutX = 288, btnAboutY = 513, btnAboutW = 224, btnAboutH = 76;
     var mouseX = e.pageX - CANVAS_OFFSET_X;
     var mouseY = e.pageY - CANVAS_OFFSET_Y;
-    if (mouseX > btnX && mouseX < btnX + btnW && mouseY > btnY && mouseY < btnY + btnH) {
+    if (mouseX > btnStartX &&
+        mouseX < btnStartX + btnStartW &&
+        mouseY > btnStartY &&
+        mouseY < btnStartY + btnStartH) {
         $(window).unbind();
-        screenManager.setComponent(game);
+        storyScreen = new StoryScreen();
+        screenManager.setComponent(storyScreen);
     }
+    else if (mouseX > btnStartX &&
+        mouseX < btnStartX + btnStartW &&
+        mouseY > btnStartY &&
+        mouseY < btnStartY + btnStartH) {
+        //TODO:ABOUT
+    }
+};
+
+//StoryScreen.js 起始界面屏幕类
+function StoryScreen() {
+    GameComponent.call(this);
+    this.text = "";
+    this.textImage = IMAGE_RESOURCE["image/text.png"];
+    this.positionY = 640;
+}
+StoryScreen.prototype = new GameComponent();
+StoryScreen.prototype.initialize = function () {
+    $(window).click(storyScreen.mouseClickEvent);
+};
+StoryScreen.prototype.draw = function () {
+    mainCanvas.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT + 40);
+    mainCanvas.drawImage(this.textImage, 201, 77, 633, 373,
+        80, this.positionY, 633, 373);
+    mainCanvas.save();
+    mainCanvas.font = "32px Impact";
+    mainCanvas.fillStyle = "#00FF00";
+    mainCanvas.fillText("CLICK TO SKIP", 30, 50);
+    mainCanvas.restore();
+};
+StoryScreen.prototype.update = function () {
+    if (this.positionY > 114) {
+        this.positionY -= 2;
+    }
+};
+StoryScreen.prototype.mouseClickEvent = function (e) {
+    $(window).unbind();
+    game = new SnowballFightGame();
+    screenManager.setComponent(game);
 };
 
 //SnowballFightGame.js 打雪仗游戏核心类
@@ -211,40 +256,41 @@ function SnowballFightGame() {
     this.isMouseOnPlayer = false;
     //鼠标是否按下
     this.isMouseDown = false;
+    //玩家是否已经提交分数
+    this.hasSubmitScore = false;
 
-    this.ITEM_RANDOM_TIME_MIN = 100;
-    this.ITEM_RANDOM_TIME_MAX = 300;
+    this.ITEM_RANDOM_TIME_MIN = 150;
+    this.ITEM_RANDOM_TIME_MAX = 400;
     this.itemTickCount = 0;
     this.playerInfoText = "";
     //日志列表
-//    this.logger = new Logger();
     this.LogList = [];
 
     //声音实例化
-    this.bgm = new AudioSprite(SOUND_RESOURCE_URL["sound/bgm.mp3"], true);
-    this.seCharge = new AudioSprite(SOUND_RESOURCE_URL["sound/seCharge.mp3"], false);
-    this.seExplosion = new AudioSprite(SOUND_RESOURCE_URL["sound/seExplosion.mp3"], false);
-    this.seFrozen = new AudioSprite(SOUND_RESOURCE_URL["sound/seFrozen.mp3"], false);
-    this.seHit = new AudioSprite(SOUND_RESOURCE_URL["sound/seHit.mp3"], false);
-    this.seHitDead = new AudioSprite(SOUND_RESOURCE_URL["sound/seHitDead.mp3"], false);
-    this.sePause = new AudioSprite(SOUND_RESOURCE_URL["sound/sePause.mp3"], false);
-    this.seMove = new AudioSprite(SOUND_RESOURCE_URL["sound/seMove.mp3"], true);
-    this.seSnowballFly = new AudioSprite(SOUND_RESOURCE_URL["sound/seSnowballFly.mp3"], false);
-    this.seThrow = new AudioSprite(SOUND_RESOURCE_URL["sound/seThrow.mp3"], false);
+    this.bgm = new AudioSprite(SOUND_RESOURCE["sound/bgm.mp3"], true);
+    this.seCharge = new AudioSprite(SOUND_RESOURCE["sound/seCharge.mp3"], false);
+    this.seExplosion = new AudioSprite(SOUND_RESOURCE["sound/seExplosion.mp3"], false);
+    this.seFrozen = new AudioSprite(SOUND_RESOURCE["sound/seFrozen.mp3"], false);
+    this.seHit = new AudioSprite(SOUND_RESOURCE["sound/seHit.mp3"], false);
+    this.seHitDead = new AudioSprite(SOUND_RESOURCE["sound/seHitDead.mp3"], false);
+    this.sePause = new AudioSprite(SOUND_RESOURCE["sound/sePause.mp3"], false);
+    this.seMove = new AudioSprite(SOUND_RESOURCE["sound/seMove.mp3"], true);
+    this.seSnowballFly = new AudioSprite(SOUND_RESOURCE["sound/seSnowballFly.mp3"], false);
+    this.seThrow = new AudioSprite(SOUND_RESOURCE["sound/seThrow.mp3"], false);
 
-    this.seKillingSpree = new AudioSprite(SOUND_RESOURCE_URL["sound/achievement/seKillingSpree.mp3"], false);
-    this.seDominating = new AudioSprite(SOUND_RESOURCE_URL["sound/achievement/seDominating.mp3"], false);
-    this.seMegaKill = new AudioSprite(SOUND_RESOURCE_URL["sound/achievement/seMegaKill.mp3"], false);
-    this.seUnstoppable = new AudioSprite(SOUND_RESOURCE_URL["sound/achievement/seUnstoppable.mp3"], false);
-    this.seWickedSick = new AudioSprite(SOUND_RESOURCE_URL["sound/achievement/seWickedSick.mp3"], false);
-    this.seMonsterKill = new AudioSprite(SOUND_RESOURCE_URL["sound/achievement/seMonsterKill.mp3"], false);
-    this.seGodLike = new AudioSprite(SOUND_RESOURCE_URL["sound/achievement/seGodLike.mp3"], false);
-    this.seHolyShit = new AudioSprite(SOUND_RESOURCE_URL["sound/achievement/seHolyShit.mp3"], false);
+    this.seKillingSpree = new AudioSprite(SOUND_RESOURCE["sound/achievement/seKillingSpree.mp3"], false);
+    this.seDominating = new AudioSprite(SOUND_RESOURCE["sound/achievement/seDominating.mp3"], false);
+    this.seMegaKill = new AudioSprite(SOUND_RESOURCE["sound/achievement/seMegaKill.mp3"], false);
+    this.seUnstoppable = new AudioSprite(SOUND_RESOURCE["sound/achievement/seUnstoppable.mp3"], false);
+    this.seWickedSick = new AudioSprite(SOUND_RESOURCE["sound/achievement/seWickedSick.mp3"], false);
+    this.seMonsterKill = new AudioSprite(SOUND_RESOURCE["sound/achievement/seMonsterKill.mp3"], false);
+    this.seGodLike = new AudioSprite(SOUND_RESOURCE["sound/achievement/seGodLike.mp3"], false);
+    this.seHolyShit = new AudioSprite(SOUND_RESOURCE["sound/achievement/seHolyShit.mp3"], false);
 
-    this.seDoubleKill = new AudioSprite(SOUND_RESOURCE_URL["sound/achievement/seDoubleKill.mp3"], false);
-    this.seTripleKill = new AudioSprite(SOUND_RESOURCE_URL["sound/achievement/seTripleKill.mp3"], false);
-    this.seUltraKill = new AudioSprite(SOUND_RESOURCE_URL["sound/achievement/seUltraKill.mp3"], false);
-    this.seRampage = new AudioSprite(SOUND_RESOURCE_URL["sound/achievement/seRampage.mp3"], false);
+    this.seDoubleKill = new AudioSprite(SOUND_RESOURCE["sound/achievement/seDoubleKill.mp3"], false);
+    this.seTripleKill = new AudioSprite(SOUND_RESOURCE["sound/achievement/seTripleKill.mp3"], false);
+    this.seUltraKill = new AudioSprite(SOUND_RESOURCE["sound/achievement/seUltraKill.mp3"], false);
+    this.seRampage = new AudioSprite(SOUND_RESOURCE["sound/achievement/seRampage.mp3"], false);
 
     this.spriteGroup = new SpriteGroup();
 }
@@ -263,12 +309,12 @@ SnowballFightGame.prototype.initialize = function () {
     //将精灵加入精灵组
     //精灵实例化
 
-    this.moveMarker = new MoveMarker(IMAGE_RESOURCE_URL[WIDGET_IMAGE_PATH]);
-    this.selectedRing = new SelectedRing(IMAGE_RESOURCE_URL[WIDGET_IMAGE_PATH]);
-    this.energyTrough = new EnergyTrough(IMAGE_RESOURCE_URL[WIDGET_IMAGE_PATH]);
+    this.moveMarker = new MoveMarker(IMAGE_RESOURCE[WIDGET_IMAGE_PATH]);
+    this.selectedRing = new SelectedRing(IMAGE_RESOURCE[WIDGET_IMAGE_PATH]);
+    this.energyTrough = new EnergyTrough(IMAGE_RESOURCE[WIDGET_IMAGE_PATH]);
     this.itemGroup = new RoleGroup("Item");
     this.hpTroughGroup = new RoleGroup("HpTrough");
-    this.player = new Player(IMAGE_RESOURCE_URL[ROLES_IMAGE_PATH], {startPosition:new Point(600, 413)}, this.hpTroughGroup);
+    this.player = new Player(IMAGE_RESOURCE[ROLES_IMAGE_PATH], {startPosition:new Point(600, 413)}, this.hpTroughGroup);
     this.enemyGroup = new RoleGroup("Enemy");
 //    this.stageText = new StageText(TEXT_IMAGE_PATH, this.stageNum);
 
@@ -332,7 +378,7 @@ SnowballFightGame.prototype.loadNewStage = function () {
     //获取下一关的信息
     this.stageInfo = StageInfo[(++this.stageNum) - 1];
     this.spriteGroup.remove(this.stageText);
-    this.stageText = new StageText(IMAGE_RESOURCE_URL[TEXT_IMAGE_PATH], this.stageNum);
+    this.stageText = new StageText(IMAGE_RESOURCE[TEXT_IMAGE_PATH], this.stageNum);
     this.spriteGroup.add(this.stageText);
 
     if (this.stageNum <= 5) {
@@ -346,8 +392,8 @@ SnowballFightGame.prototype.loadNewStage = function () {
     }
     this.spriteGroup.remove(this.background);
     this.spriteGroup.remove(this.stateBoard);
-    this.background = new Background(IMAGE_RESOURCE_URL[BACKGROUND_IMAGE_PATH[this.stageClass]], false);
-    this.stateBoard = new StateBoard(IMAGE_RESOURCE_URL[BACKGROUND_IMAGE_PATH[this.stageClass]]);
+    this.background = new Background(IMAGE_RESOURCE[BACKGROUND_IMAGE_PATH[this.stageClass]], false);
+    this.stateBoard = new StateBoard(IMAGE_RESOURCE[BACKGROUND_IMAGE_PATH[this.stageClass]]);
     this.spriteGroup.add(this.background);
     this.spriteGroup.add(this.stateBoard);
 
@@ -357,7 +403,7 @@ SnowballFightGame.prototype.loadNewStage = function () {
 SnowballFightGame.prototype.loadRoles = function () {
     //重置关卡状态，读取关卡信息
     for (var i in this.stageInfo) {
-        this.enemyGroup.add(new Enemy(IMAGE_RESOURCE_URL[ROLES_IMAGE_PATH], this.stageInfo[i], this.hpTroughGroup));
+        this.enemyGroup.add(new Enemy(IMAGE_RESOURCE[ROLES_IMAGE_PATH], this.stageInfo[i], this.hpTroughGroup));
     }
     this.stageState = "GAME_PLAYING";
 }
@@ -380,7 +426,7 @@ SnowballFightGame.prototype.updateMainGame = function () {
     //道具刷新逻辑
     if (this.itemTickCount == 0) {
         this.itemTickCount = Math.floor(Math.random() * (this.ITEM_RANDOM_TIME_MAX - this.ITEM_RANDOM_TIME_MIN) + this.ITEM_RANDOM_TIME_MIN);
-        this.itemGroup.add(new Item(IMAGE_RESOURCE_URL[WIDGET_IMAGE_PATH]));
+        this.itemGroup.add(new Item(IMAGE_RESOURCE[WIDGET_IMAGE_PATH]));
     }
     this.itemTickCount--;
     this.spriteGroup.flush();
@@ -420,7 +466,7 @@ SnowballFightGame.prototype.gameOver = function () {
                 && mouseY > game.retryButton.positionY
                 && mouseY < game.retryButton.positionY + game.retryButton.height);
         game.submitButton.isVisible = game.submitButton.isMouseOn =
-            (mouseX > game.submitButton.positionX
+            (!game.hasSubmitScore && mouseX > game.submitButton.positionX
                 && mouseX < game.submitButton.positionX + game.submitButton.width
                 && mouseY > game.submitButton.positionY
                 && mouseY < game.submitButton.positionY + game.submitButton.height);
@@ -429,34 +475,30 @@ SnowballFightGame.prototype.gameOver = function () {
         if (game.retryButton.isMouseOn) {
             game.restart();
         }
-        else if (game.submitButton.isMouseOn) {
-            //TODO:提交分数
-            var Sub = document.getElementById("SubmitBox");
-            document.getElementById("SubmitBox").style.display = "block";
-            submitScore();
+        else if (game.submitButton.isMouseOn && !this.hasSubmitScore) {
+			$("#submitBox").show();
         }
+    };
+    var bindEvent = function(){
+        //绑定新的窗口事件
+        $(window).unbind();
+        $(window).mousemove(gameoverMouseMove);
+        $(window).click(gameoverMouseClick);
     };
 
     //添加背景和两个按钮
-    this.spriteGroup.add(new GameoverGround(IMAGE_RESOURCE_URL[GAMEOVER_IMAGE_PATH[this.stageClass]]));
-    this.retryButton = new GameoverGroundButton(IMAGE_RESOURCE_URL[GAMEOVER_IMAGE_PATH[this.stageClass]], 0);
-    this.submitButton = new GameoverGroundButton(IMAGE_RESOURCE_URL[GAMEOVER_IMAGE_PATH[this.stageClass]], 1);
+    this.spriteGroup.add(new GameoverGround(IMAGE_RESOURCE[GAMEOVER_IMAGE_PATH[this.stageClass]]));
+    this.retryButton = new GameoverGroundButton(IMAGE_RESOURCE[GAMEOVER_IMAGE_PATH[this.stageClass]], 0);
+    this.submitButton = new GameoverGroundButton(IMAGE_RESOURCE[GAMEOVER_IMAGE_PATH[this.stageClass]], 1);
     this.spriteGroup.add(this.retryButton);
     this.spriteGroup.add(this.submitButton);
-    this.spriteGroup.add(new GameoverScoreBoard(IMAGE_RESOURCE_URL[GAMEOVER_IMAGE_PATH[this.stageClass]],
-        this.stageClass, this.gameScore));
+    this.spriteGroup.add(new GameoverScoreBoard(IMAGE_RESOURCE[GAMEOVER_IMAGE_PATH[this.stageClass]],
+        this.stageClass, this.gameScore,bindEvent));
 
     this.hpTroughGroup.clear();
-    //绑定新的窗口事件
-    $(window).unbind();
-    $(window).mousemove(gameoverMouseMove);
-    $(window).click(gameoverMouseClick);
+
     //跳转游戏状态
     this.stageState = "GAME_OVER";
-
-    if (this.gameScore == getCalcScore()(this.LogList)) {
-//        alert(this.gameScore);
-    }
 };
 SnowballFightGame.prototype.restart = function () {
     this.bgm.stop();
@@ -566,9 +608,10 @@ SnowballFightGame.prototype.mouseUpEvent = function (e) {
 
 //HTML加载主入口
 $(document).ready(documentReady);
-
 function documentReady() {
-    //获取主画布
+	$("#submitBox").hide(); 
+	//$("#rankList").show();
+	//获取主画布
     mainCanvas = $("#gameCanvas").get(0).getContext("2d");
     $('#gameCanvas').on('selectstart', function () {
         return false;
@@ -580,8 +623,6 @@ function documentReady() {
     CANVAS_OFFSET_Y = canvasOffset.top;
     //加载关卡信息
     loadingScreen = new LoadingScreen();
-    startScreen = new StartScreen();
-    game = new SnowballFightGame();
 
     screenManager = new ScreenManager(loadingScreen);
     screenManager.start();
