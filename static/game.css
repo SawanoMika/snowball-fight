@@ -226,13 +226,16 @@ height: 57px;
   height:10px;
  }
  
- #rankList th{
+#rankList th{
  font-size:2em;
  }
 
- #rankBackButton{
+#rankBackButton{
 	position:relative;
 	left:260px;
 	top:10px;
-	}
+}
 
+#uyan_frame {
+	margin-top: 300px;
+}
