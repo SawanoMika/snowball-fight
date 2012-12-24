@@ -21,7 +21,7 @@ canvas {
 }
 
 body {
-    background: url(image/webImage/bground.png);
+    background: url(/static/image/bground.png);
     background-color: #fafccd;
     font-family: Verdana, Arial, sans-serif;
     font-size: 18px;

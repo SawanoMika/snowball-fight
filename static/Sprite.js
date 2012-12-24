@@ -2,7 +2,7 @@
  * 精灵的绘图层次说明：
  * Background:0
  * Item:3
- * EnergyTrough,SelectedRing,MoveMarker,HpTrough:4
+ * EnergyTrough,SelectedRing,MoveMarker,HpTrough,FallingSnow:4
  * Character:5 (Dead:2)
  * Snowball:6
  * StateBoard:7
@@ -96,7 +96,7 @@ function Character(imageSource) {
 
     this.timer = null;
     //血条
-    this.hpTrough = new HpTrough(IMAGE_RESOURCE[WIDGET_IMAGE_PATH],this);
+    this.hpTrough = new HpTrough(IMAGE_RESOURCE[WIDGET_IMAGE_PATH], this);
 }
 Character.prototype = new DynamicSprite();
 Character.prototype.draw = function () {
@@ -261,7 +261,7 @@ Character.prototype.beHit = function (hitPoint, host) {
     if (this.hp <= 0) {
         this.die(host);
     }
-    if (this.timer !=undefined && this.timer != null) {
+    if (this.timer != undefined && this.timer != null) {
         clearTimeout(this.timer);
     }
     switch (host.attackType) {
@@ -466,6 +466,7 @@ Enemy.prototype.update = function () {
             this.setNewAction();
         }
         if (game.isGameOver) {
+            this.isDoingAction = true;
             this.status = this.STATUS_STAND;
             if (this.jumpCount < this.JUMP_TOTAL_COUNT) {
                 this.positionY -= this.jumpDy;

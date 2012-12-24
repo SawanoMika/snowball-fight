@@ -10,10 +10,10 @@ Enemy.prototype.getAIFunc = function (aiLevel) {
             //随机行为产生器
             else {
                 var r = Math.random();
-                if (r < 0.2) {
+                if (r < 0.1) {
                     actionType = _this.ACTION_TYPE_STOP;
                 }
-                else if (r < 0.5) {
+                else if (r < 0.6) {
                     actionType = _this.ACTION_TYPE_ATTACK;
                 }
                 else {
@@ -26,14 +26,14 @@ Enemy.prototype.getAIFunc = function (aiLevel) {
                     //随机停止0.5~3.5秒
                     _this.timer = setTimeout((function () {
                         _this.isDoingAction = false;
-                    }).bind(_this), Math.floor(Math.random() * 3000) + 500);
+                    }).bind(_this), Math.floor(Math.random() * 2000) + 200);
                     break;
                 case _this.ACTION_TYPE_ATTACK:
                     _this.timer = setTimeout((function () {
                         _this.startForce();
                         setTimeout((function () {
                             _this.endForce(Math.random() * 50 + 40);
-                        }).bind(_this), Math.floor(Math.random() * 3000) + 200);
+                        }).bind(_this), Math.floor(Math.random() * 2000) + 400);
                     }).bind(_this), Math.floor(Math.random() * 400) + 200);
                     break;
                 case _this.ACTION_TYPE_MOVE:
@@ -89,7 +89,7 @@ Enemy.prototype.getAIFunc = function (aiLevel) {
                         _this.startForce();
                         setTimeout((function () {
                             _this.endForce(Math.floor(Math.random() * 60) + 40);
-                        }).bind(_this), Math.floor(Math.random() * 3000) + 500);
+                        }).bind(_this), Math.floor(Math.random() * 2000) + 400);
                     }).bind(_this), Math.floor(Math.random() * 400 + 200));
                     break;
                 case _this.ACTION_TYPE_MOVE:

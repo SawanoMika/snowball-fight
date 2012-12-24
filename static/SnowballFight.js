@@ -18,6 +18,7 @@ var WIDGET_IMAGE_PATH = "image/widget.png";
 var TEXT_IMAGE_PATH = "image/text.png";
 var GAMEOVER_IMAGE_PATH = ["image/gameover1.png", "image/gameover2.png", "image/gameover3.png"];
 var LOADING_IMAGE_PATH = "image/loading.png";
+var SNOW_IMAGE_PATH = "image/snow.png";
 var FONT_FILL_STYLE = ["#FFCC00", "#66FFCC", "#FF99FF"];
 
 //预加载声音资源文件名
@@ -83,7 +84,8 @@ var IMAGE_RESOURCE_NAME = [
     "image/roles.png",
     "image/startScreen.png",
     "image/text.png",
-    "image/widget.png"
+    "image/widget.png",
+    "image/snow.png"
 ];
 var IMAGE_RESOURCE = new Array();
 var IMAGE_RESOURCE_URL = new Array();
@@ -99,7 +101,7 @@ IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[8]] = "http://storage.live.com/items/3140
 IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[9]] = "http://storage.live.com/items/314044073BEC6D79!1034";
 IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[10]] = "http://storage.live.com/items/314044073BEC6D79!1035";
 IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[11]] = "http://storage.live.com/items/314044073BEC6D79!1036";
-
+IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[12]] = "http://storage.live.com/items/314044073BEC6D79!1810";
 
 /*全局静态变量*/
 
@@ -119,7 +121,8 @@ var game;
 //LoadingScreen.js 加载界面屏幕类
 function LoadingScreen() {
     GameComponent.call(this);
-    this.loadingDisplay = new LoadingDisplay(IMAGE_RESOURCE[LOADING_IMAGE_PATH]);
+    this.loadingImage = new Image();
+    this.loadingImage.src = LOADING_IMAGE_PATH;
     this.showText = "";
     this.loadedCompleteCount = 0;
     this.loadedTotalCount = SOUND_RESOURCE_NAME.length + IMAGE_RESOURCE_NAME.length;
@@ -137,7 +140,7 @@ LoadingScreen.prototype.draw = function () {
     mainCanvas.font = "64px Impact";
     mainCanvas.fillText(this.showText, 160, 160);
     mainCanvas.restore();
-    this.loadingDisplay.draw();
+    mainCanvas.drawImage(this.loadingImage,180,200);
 };
 LoadingScreen.prototype.update = function () {
     if (this.loadedCompleteCount >= this.loadedTotalCount) {
@@ -244,12 +247,14 @@ function SnowballFightGame() {
     GameComponent.call(this);
     this.BASE_ENEMY_SCORE = 200;
     this.ENEMY_STEP_SCORE = 50;
+    this.ITEM_RANDOM_TIME_MIN_LIST = [240,180,120];
+    this.ITEM_RANDOM_TIME_MAX_LIST = [450,360,240];
 
     //初始化全局参数
     this.isGameOver = false;
     this.isPause = false;
     this.gameScore = 0;
-    this.stageNum = 0;
+    this.stageNum = 36;
     this.stageClass = 0;
     this.stageState = "LOAD_STAGE";
     //鼠标是否在玩家上
@@ -259,8 +264,8 @@ function SnowballFightGame() {
     //玩家是否已经提交分数
     this.hasSubmitScore = false;
 
-    this.ITEM_RANDOM_TIME_MIN = 150;
-    this.ITEM_RANDOM_TIME_MAX = 400;
+    this.ITEM_RANDOM_TIME_MIN = this.ITEM_RANDOM_TIME_MIN_LIST[0];
+    this.ITEM_RANDOM_TIME_MAX = this.ITEM_RANDOM_TIME_MAX_LIST[0];
     this.itemTickCount = 0;
     this.playerInfoText = "";
     //日志列表
@@ -384,19 +389,31 @@ SnowballFightGame.prototype.loadNewStage = function () {
     if (this.stageNum <= 5) {
         this.stageClass = 0;
     }
-    else if (this.stageNum < 12) {
+    else if (this.stageNum <= 12) {
         this.stageClass = 1;
     }
     else {
         this.stageClass = 2;
     }
+
     this.spriteGroup.remove(this.background);
     this.spriteGroup.remove(this.stateBoard);
+    this.spriteGroup.remove(this.fallingSnow);
     this.background = new Background(IMAGE_RESOURCE[BACKGROUND_IMAGE_PATH[this.stageClass]], false);
     this.stateBoard = new StateBoard(IMAGE_RESOURCE[BACKGROUND_IMAGE_PATH[this.stageClass]]);
     this.spriteGroup.add(this.background);
     this.spriteGroup.add(this.stateBoard);
+    //增加雪花
+    if((this.stageNum >=3 && this.stageNum<=5) ||
+        (this.stageNum >=9 && this.stageNum<=12) ||
+        this.stageNum >=16){
+        this.fallingSnow = new FallingSnow(IMAGE_RESOURCE[SNOW_IMAGE_PATH]);
+        this.spriteGroup.add(this.fallingSnow);
+    }
 
+    //根据阶段设置道具爆率
+    this.ITEM_RANDOM_TIME_MIN = this.ITEM_RANDOM_TIME_MIN_LIST[this.stageClass];
+    this.ITEM_RANDOM_TIME_MAX = this.ITEM_RANDOM_TIME_MAX_LIST[this.stageClass];
     this.enemyGroup.clear();
     this.stageState = "STAGE_TEXT";
 };

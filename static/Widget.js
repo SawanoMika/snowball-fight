@@ -1,16 +1,26 @@
-//LoadingDisplay.js 加载界面显示精灵类
-function LoadingDisplay(imageSource) {
-    this.img = new Image();
-    this.img.src = IMAGE_RESOURCE_URL["image/loading.png"];
-//    Sprite.call(this, imageSource);
-    this.width = 380;
-    this.height = 380;
-    this.positionX = 180;
-    this.positionY = 200;
+//FallingSnow.js 飘落雪花精灵类
+function FallingSnow(imageSource) {
+    Sprite.call(this, imageSource);
+    this.positionX = 0;
+    this.positionY = -SCREEN_HEIGHT;
+    this.fallSpeed = Math.floor(Math.random()*3+2);
+    this.drawLayer = 4;
 }
-LoadingDisplay.prototype = new Sprite();
+FallingSnow.prototype = new Sprite();
+FallingSnow.prototype.draw = function () {
+    mainCanvas.drawImage(this.img, this.positionX, this.positionY);
+    mainCanvas.drawImage(this.img, this.positionX, this.positionY + SCREEN_HEIGHT);
+};
+FallingSnow.prototype.update = function () {
+    if (this.positionY > 0) {
+        this.positionY = -SCREEN_HEIGHT;
+    }
+    else{
+        this.positionY += this.fallSpeed;
+    }
+};
 
-//血槽精灵类
+//HpTrough.js 血槽精灵类
 function HpTrough(imageSource, host) {
     Sprite.call(this, imageSource);
     this.boardWidth = 44;
