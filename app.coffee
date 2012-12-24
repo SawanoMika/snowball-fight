@@ -109,7 +109,8 @@ printBoard = (req, res) ->
 ############ Routes
 
 app.get '/', (req, res) ->
-  res.send "Hello World!"
+  require('fs').readFile __dirname + '/static/index.html', 'utf-8', (err, text) ->
+    res.send text
 
 app.post '/score', (req, res) ->
   recordScore req, res
