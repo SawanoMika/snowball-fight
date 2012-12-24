@@ -13,17 +13,20 @@ function rankListClickBack() {
 var userInfo;
 
 function submitScore() {
+    //锁定用户提交，在提交失败的时候解锁
+    game.hasSubmitScore = true;
+    //本地用户信息
+    userInfo = {
+        name:$('#usernameInput').val(),
+        score:game.gameScore
+    };
+    //
     var postUrl = "/score";
     var jsonStr = JSON.stringify({
         name:$('#usernameInput').val() || '匿名',
         mobile:$('#contact').val(),
         log:game.LogList
     });
-	userInfo = {
-		name:$('#usernameInput').val(),
-		score:game.gameScore
-		};
-
     $.ajax({
         type:'POST',
         url:postUrl,
@@ -31,13 +34,58 @@ function submitScore() {
         success:function (data) {
             $("#submitBox").hide();
             $("#rankList").show();
-            game.hasSubmitScore = true;
             alert("提交成功！");
-            getRank();
+
+            //清空排行榜，显示用户就近排名
+            $("#rankTable").empty();
+            $("#rankTable").append("<tr><th>排名</th><th>昵称</th><th>得分</th></tr>");
+            var appendList = [];
+            var surrounding = data.surrounding;
+            var userIndex = 0;
+            //查找用户的索引
+            for (var i in surrounding) {
+                if (surrounding[i].rank == userRank) {
+                    userIndex = i;
+                    break;
+                }
+            }
+            //加入用户本身
+            appendList.push(surrounding[userIndex]);
+            //查找用户前面四名
+            var leftIndex = userIndex - 1;
+            while (leftIndex >= 0 && appendList.length <= 5) {
+                appendList.push(surrounding[leftIndex]);
+                leftIndex--;
+            }
+            appendList.reverse();
+            var rightIndex = userIndex + 1;
+            while (rightIndex < surrounding.length && appendList.length <= 10) {
+                appendList.push(surrounding[rightIndex]);
+                rightIndex++;
+            }
+            for (var i in appendList) {
+                var rank = appendList[i].rank;
+                var name = surrounding[i].name;
+                var score = surrounding[i].score;
+                var newtr;
+                if (rank == data.rank) {
+                    newtr = $("<tr><td><font color='#3399FF'>" + rank +
+                        "</td><td><font color='#3399FF'>" + name +
+                        "</td><td><font color='#3399FF'>" + score + "</td></tr>");
+                }
+                else {
+                    newtr = $("<tr><td>" + rank +
+                        "</td><td>" + name +
+                        "</td><td>" + score + "</td></tr>");
+                }
+                $("#rankTable").append(newtr);
+            }
+//            getRank();
             console.info(data);
         },
         error:function (err) {
             alert("提交失败，请重新尝试！");
+            game.hasSubmitScore = false;
             console.error(err);
         },
         dataType:'json',
@@ -53,19 +101,7 @@ function getRank() {
         url:postUrl,
         data:{},
         success:function (data) {
-            for (var i in data) {
-                var num = parseInt(i) + 1;
-                var name = data[i].name;
-                var score = data[i].score;
-				var newtr;
-				if(name == userInfo.name && parseInt(score) == userInfo.score){
-					newtr = $("<tr><td><font color='#3399FF'>" + num + "</td><td><font color='#3399FF'>" + name + "</td><td><font color='#3399FF'>" + score + "</td></tr>");
-				}
-                else {
-					newtr = $("<tr><td>" + num + "</td><td>" + name + "</td><td>" + score + "</td></tr>");
-				}
-                $("#rankTable").append(newtr);
-            }
+
             console.info(data);
         },
         error:function (err) {

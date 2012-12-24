@@ -140,7 +140,7 @@ LoadingScreen.prototype.draw = function () {
     mainCanvas.font = "64px Impact";
     mainCanvas.fillText(this.showText, 160, 160);
     mainCanvas.restore();
-    mainCanvas.drawImage(this.loadingImage,180,200);
+    mainCanvas.drawImage(this.loadingImage, 180, 200);
 };
 LoadingScreen.prototype.update = function () {
     if (this.loadedCompleteCount >= this.loadedTotalCount) {
@@ -247,20 +247,22 @@ function SnowballFightGame() {
     GameComponent.call(this);
     this.BASE_ENEMY_SCORE = 200;
     this.ENEMY_STEP_SCORE = 50;
-    this.ITEM_RANDOM_TIME_MIN_LIST = [240,180,120];
-    this.ITEM_RANDOM_TIME_MAX_LIST = [450,360,240];
+    this.ITEM_RANDOM_TIME_MIN_LIST = [240, 180, 120];
+    this.ITEM_RANDOM_TIME_MAX_LIST = [450, 360, 240];
 
     //初始化全局参数
     this.isGameOver = false;
     this.isPause = false;
     this.gameScore = 0;
-    this.stageNum = 36;
+    this.stageNum = 0;
     this.stageClass = 0;
     this.stageState = "LOAD_STAGE";
     //鼠标是否在玩家上
     this.isMouseOnPlayer = false;
     //鼠标是否按下
     this.isMouseDown = false;
+    this.showRetryHint = false;
+    this.showSubmitHint = false;
     //玩家是否已经提交分数
     this.hasSubmitScore = false;
 
@@ -342,6 +344,28 @@ SnowballFightGame.prototype.draw = function () {
     mainCanvas.fillStyle = FONT_FILL_STYLE[this.stageClass];
     mainCanvas.fillText(this.playerInfoText, 10, SCREEN_HEIGHT + 28);
     mainCanvas.restore();
+    if (this.showRetryHint || this.showSubmitHint) {
+        mainCanvas.strokeRect(this.hintPosition.x - 140, this.hintPosition.y - 80,
+            290, this.showRetryHint ? 46 : 72);
+        mainCanvas.save();
+        mainCanvas.fillStyle = "#3399FF";
+        mainCanvas.fillRect(this.hintPosition.x - 140, this.hintPosition.y - 80,
+            290, this.showRetryHint ? 46 : 72);
+        mainCanvas.restore();
+        mainCanvas.font = "16px 幼圆";
+        if (this.showRetryHint) {
+            mainCanvas.fillText("再玩一次挑战更高难度的关卡吧！",
+                this.hintPosition.x - 140 + 24, this.hintPosition.y - 80 + 30);
+        }
+        else {
+            mainCanvas.fillText("提交你的分数。",
+                this.hintPosition.x - 140 + 8, this.hintPosition.y - 80 + 24);
+            mainCanvas.fillText("截止至2013年1月1日晚上0点，TOP5",
+                this.hintPosition.x - 140 + 8, this.hintPosition.y - 80 + 44);
+            mainCanvas.fillText("将可以获得我们团队送出的特制礼物哦",
+                this.hintPosition.x - 140 + 8, this.hintPosition.y - 80 + 64);
+        }
+    }
 };
 SnowballFightGame.prototype.update = function () {
     if (!this.isPause) {
@@ -404,9 +428,9 @@ SnowballFightGame.prototype.loadNewStage = function () {
     this.spriteGroup.add(this.background);
     this.spriteGroup.add(this.stateBoard);
     //增加雪花
-    if((this.stageNum >=3 && this.stageNum<=5) ||
-        (this.stageNum >=9 && this.stageNum<=12) ||
-        this.stageNum >=16){
+    if ((this.stageNum >= 3 && this.stageNum <= 5) ||
+        (this.stageNum >= 9 && this.stageNum <= 12) ||
+        this.stageNum >= 16) {
         this.fallingSnow = new FallingSnow(IMAGE_RESOURCE[SNOW_IMAGE_PATH]);
         this.spriteGroup.add(this.fallingSnow);
     }
@@ -432,7 +456,8 @@ SnowballFightGame.prototype.updateMainGame = function () {
     }
     //过关回复最大生命的15%，读取新关卡信息
     if (!this.isGameOver && isEnemyAllDead) {
-        this.player.hp += Math.floor(this.player.MAX_HP * 0.15);
+        var restoreRate = [0.15, 0.12, 0.1];
+        this.player.hp += Math.floor(this.player.MAX_HP * restoreRate[this.stageClass]);
         if (this.player.hp > this.player.MAX_HP)
             this.player.hp = this.player.MAX_HP;
         this.stageText.triggleClear();
@@ -474,34 +499,41 @@ SnowballFightGame.prototype.updatePlayerInfo = function () {
         "  分数:" + this.gameScore;
 };
 SnowballFightGame.prototype.gameOver = function () {
+    //鼠标移动事件
     var gameoverMouseMove = function (e) {
         var mouseX = e.pageX - CANVAS_OFFSET_X;
         var mouseY = e.pageY - CANVAS_OFFSET_Y;
-        game.retryButton.isVisible = game.retryButton.isMouseOn =
+        game.showRetryHint = game.retryButton.isVisible = game.retryButton.isMouseOn =
             (mouseX > game.retryButton.positionX
                 && mouseX < game.retryButton.positionX + game.retryButton.width
                 && mouseY > game.retryButton.positionY
                 && mouseY < game.retryButton.positionY + game.retryButton.height);
-        game.submitButton.isVisible = game.submitButton.isMouseOn =
+
+        game.showSubmitHint = game.submitButton.isVisible = game.submitButton.isMouseOn =
             (!game.hasSubmitScore && mouseX > game.submitButton.positionX
                 && mouseX < game.submitButton.positionX + game.submitButton.width
                 && mouseY > game.submitButton.positionY
                 && mouseY < game.submitButton.positionY + game.submitButton.height);
+        if (game.showRetryHint || game.showSubmitHint) {
+            game.hintPosition = new Point(mouseX, mouseY);
+        }
     };
+    //鼠标点击事件
     var gameoverMouseClick = function (e) {
         if (game.retryButton.isMouseOn) {
             game.restart();
         }
         else if (game.submitButton.isMouseOn && !this.hasSubmitScore) {
-			$("#submitBox").show();
+            $("#submitBox").show();
         }
     };
-    var bindEvent = function(){
-        //绑定新的窗口事件
+    //绑定新的窗口事件
+    var bindEvent = function () {
         $(window).unbind();
         $(window).mousemove(gameoverMouseMove);
         $(window).click(gameoverMouseClick);
     };
+
 
     //添加背景和两个按钮
     this.spriteGroup.add(new GameoverGround(IMAGE_RESOURCE[GAMEOVER_IMAGE_PATH[this.stageClass]]));
@@ -510,7 +542,7 @@ SnowballFightGame.prototype.gameOver = function () {
     this.spriteGroup.add(this.retryButton);
     this.spriteGroup.add(this.submitButton);
     this.spriteGroup.add(new GameoverScoreBoard(IMAGE_RESOURCE[GAMEOVER_IMAGE_PATH[this.stageClass]],
-        this.stageClass, this.gameScore,bindEvent));
+        this.stageClass, this.gameScore, bindEvent));
 
     this.hpTroughGroup.clear();
 
@@ -626,9 +658,9 @@ SnowballFightGame.prototype.mouseUpEvent = function (e) {
 //HTML加载主入口
 $(document).ready(documentReady);
 function documentReady() {
-	$("#submitBox").hide(); 
-	//$("#rankList").show();
-	//获取主画布
+    $("#submitBox").hide();
+    //$("#rankList").show();
+    //获取主画布
     mainCanvas = $("#gameCanvas").get(0).getContext("2d");
     $('#gameCanvas').on('selectstart', function () {
         return false;
