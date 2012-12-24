@@ -1,12 +1,16 @@
 function submitBoxClickOk() {
     submitScore();
 }
+
 function submitBoxClickCancel() {
     $("#submitBox").hide();
 }
+
 function rankListClickBack() {
     $("#rankList").hide();
 }
+
+var userInfo;
 
 function submitScore() {
     var postUrl = "/score";
@@ -15,10 +19,10 @@ function submitScore() {
         mobile:$('#contact').val(),
         log:game.LogList
     });
-
-    $('#usernameInput').val('');
-    $('#contact').val('');
-    $('#SubmitBox').hide();
+	userInfo = {
+		name:$('#usernameInput').val(),
+		score:game.gameScore
+		};
 
     $.ajax({
         type:'POST',
@@ -53,7 +57,13 @@ function getRank() {
                 var num = parseInt(i) + 1;
                 var name = data[i].name;
                 var score = data[i].score;
-                var newtr = $("<tr><td>" + num + "</td><td>" + name + "</td><td>" + score + "</td></tr>");
+				var newtr;
+				if(name == userInfo.name && parseInt(score) == userInfo.score){
+					newtr = $("<tr><td><font color='#3399FF'>" + num + "</td><td><font color='#3399FF'>" + name + "</td><td><font color='#3399FF'>" + score + "</td></tr>");
+				}
+                else {
+					newtr = $("<tr><td>" + num + "</td><td>" + name + "</td><td>" + score + "</td></tr>");
+				}
                 $("#rankTable").append(newtr);
             }
             console.info(data);
