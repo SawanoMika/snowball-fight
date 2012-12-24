@@ -65,13 +65,13 @@ recordScore = (req, res) ->
             .find({_id: {$ne: s._id}, score: {$gte: s.score}})
             .sort('score -ts')
             .select('name score -_id')
-            .limit(-3)
+            .limit(-10)
             .exec (err, above) ->
               Score
                 .find({_id: {$ne: s._id}, score: {$lte: s.score}})
                 .sort('-score ts')
                 .select('name score -_id')
-                .limit(-3)
+                .limit(-10)
                 .exec (err, below) ->
                   # add ranking
                   above = above.map (elem) -> return elem.toObject()
