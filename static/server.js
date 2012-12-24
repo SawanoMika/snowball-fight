@@ -44,8 +44,8 @@ function submitScore() {
             var userIndex = 0;
             //查找用户的索引
             for (var i in surrounding) {
-                if (surrounding[i].rank == userRank) {
-                    userIndex = i;
+                if (surrounding[i].rank == data.rank) {
+                    userIndex = parseInt(i);
                     break;
                 }
             }
@@ -53,20 +53,20 @@ function submitScore() {
             appendList.push(surrounding[userIndex]);
             //查找用户前面四名
             var leftIndex = userIndex - 1;
-            while (leftIndex >= 0 && appendList.length <= 5) {
+            while (leftIndex >= 0 && appendList.length < 5) {
                 appendList.push(surrounding[leftIndex]);
                 leftIndex--;
             }
             appendList.reverse();
             var rightIndex = userIndex + 1;
-            while (rightIndex < surrounding.length && appendList.length <= 10) {
+            while (rightIndex < surrounding.length && appendList.length < 10) {
                 appendList.push(surrounding[rightIndex]);
                 rightIndex++;
             }
             for (var i in appendList) {
                 var rank = appendList[i].rank;
-                var name = surrounding[i].name;
-                var score = surrounding[i].score;
+                var name = appendList[i].name;
+                var score = appendList[i].score;
                 var newtr;
                 if (rank == data.rank) {
                     newtr = $("<tr><td><font color='#3399FF'>" + rank +
