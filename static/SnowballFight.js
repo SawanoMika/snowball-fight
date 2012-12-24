@@ -659,7 +659,7 @@ SnowballFightGame.prototype.mouseUpEvent = function (e) {
 $(document).ready(documentReady);
 function documentReady() {
     $("#submitBox").hide();
-    //$("#rankList").show();
+//    $("#rankList").show();
     //获取主画布
     mainCanvas = $("#gameCanvas").get(0).getContext("2d");
     $('#gameCanvas').on('selectstart', function () {

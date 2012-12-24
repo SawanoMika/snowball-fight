@@ -94,14 +94,31 @@ function submitScore() {
     });
 }
 
-function getRank() {
+//获取
+function getTop10() {
     var postUrl = "/board";
     $.ajax({
         type:'GET',
         url:postUrl,
         data:{},
         success:function (data) {
-
+            for (var i in data[i]) {
+                var rank = parseInt(i)+1;
+                var name = data[i].name;
+                var score = data[i].score;
+                var newtr;
+                if (rank == data[i].rank) {
+                    newtr = $("<tr><td><font color='#3399FF'>" + rank +
+                        "</td><td><font color='#3399FF'>" + name +
+                        "</td><td><font color='#3399FF'>" + score + "</td></tr>");
+                }
+                else {
+                    newtr = $("<tr><td>" + rank +
+                        "</td><td>" + name +
+                        "</td><td>" + score + "</td></tr>");
+                }
+                $("#rankTable").append(newtr);
+            }
             console.info(data);
         },
         error:function (err) {
