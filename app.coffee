@@ -84,7 +84,7 @@ recordScore = (req, res) ->
                     score: s.score
                   # surrounding
                   surrounding = above.reverse().concat([me]).concat(below)
-                  res.send 200, {code: 200, mdg: "success!", 'rank': rank, surrounding: surrounding}
+                  res.send 200, {code: 200, msg: "success!", 'rank': rank, surrounding: surrounding}
       # Score.count {_id: {$lt: s.ts}, score: {$gt: s.score}}, (err, count) ->
       #   rank = count + 1
       #   Score
