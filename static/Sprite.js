@@ -169,6 +169,11 @@ Character.prototype.specialStatusUpdate = function () {
     //中毒状态倒计数逻辑
     if (this.isPoisoning && this.poisoningCount < this.POISONING_TOTAL_COUNT) {
         this.hp -= Math.floor(this.MAX_HP * 0.005);
+        //中毒不会导致死亡
+        if (this.hp <= 1) {
+            this.hp = 1;
+            this.isPoisoning = false;
+        }
         this.poisoningCount++;
     }
     else {
