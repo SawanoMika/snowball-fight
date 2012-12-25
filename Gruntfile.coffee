@@ -4,6 +4,10 @@ module.exports = (grunt) ->
     uglify:
       options:
         # mangle:
+        mangle: true
+        # compress: false
+        # beautify: false
+        # beautify: false
         #   except: ['jQuery', 'Modenrizr', '$']
         banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' + '<%= grunt.template.today("yyyy-mm-dd") %> */'
       dist:
@@ -23,7 +27,7 @@ module.exports = (grunt) ->
 		  'static/unsupport.html': 'assets/unsupport.html'
     watch:
       js:
-        files: ['assets/*.js']
+        files: ['assets/CheckBrowser.js', 'assets/html5_game_lib.js', 'assets/StageMap.js', 'assets/SnowballFight.js', 'assets/Widget.js','assets/Item.js', 'assets/Sprite.js','assets/AI.js', 'assets/Score.js', 'assets/server.js']
         tasks: ['uglify']
       css:
         files: ['assets/*.css']

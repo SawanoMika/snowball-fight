@@ -198,6 +198,7 @@ function StartScreen() {
     this.background = new Background(IMAGE_RESOURCE[STARTSCREEN_IMAGE_PATH], true);
 }
 StartScreen.prototype = new GameComponent();
+StartScreen.prototype.update = function () {};
 StartScreen.prototype.draw = function () {
     mainCanvas.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT + 40);
     this.background.draw();
@@ -592,7 +593,7 @@ SnowballFightGame.prototype.restart = function () {
     screenManager.setComponent(game);
 };
 SnowballFightGame.prototype.addScore = function (scoreType, info) {
-    var ACHIEVEMENT_LIST = ["KillingSpree", "Domanating", "MegaKill",
+    var ACHIEVEMENT_LIST = ["KillingSpree", "Dominating", "MegaKill",
         "Unstoppable", "WickedSick", "MonsterKill", "GodLike", "HolyShit",
         "DoubleKill", "TripleKill", "UltraKill", "Rampage"];
     var ACHIEVEMENT_SCORE = [200, 300, 450, 650, 900, 1200, 1600, 2000, 500, 750, 1000, 1250];

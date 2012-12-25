@@ -51,7 +51,7 @@ StageInfo[5] = [
 StageInfo[6] = [
     {aiLevel:1, startPosition:new Point(170, 41), attackLevel:1, moveSpeedLevel:2, snowballSpeedLevel:1, MAX_HP:1500},
     {aiLevel:0, startPosition:new Point(150, 158), attackLevel:2, moveSpeedLevel:1, snowballSpeedLevel:1, MAX_HP:1500},
-    {aiLevel:1, startPosition:new Point(341, 256), attackLevel:2, moveSpeedLevel:2, snowballSpeedLevel:2, MAX_HP:1500},
+    {aiLevel:1, startPosition:new Point(332, 156), attackLevel:2, moveSpeedLevel:2, snowballSpeedLevel:2, MAX_HP:1500},
     {aiLevel:0, startPosition:new Point(41, 34), attackLevel:2, moveSpeedLevel:2, snowballSpeedLevel:2, MAX_HP:1750}
 ];
 //5
