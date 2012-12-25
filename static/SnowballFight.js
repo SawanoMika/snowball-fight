@@ -135,7 +135,7 @@ function LoadingScreen() {
         "无伤情况下击杀敌人可以获得成就加分",
         "攻击力、移动速度、雪球速度的提升是永久性的",
         "每过一关都会恢复少许血量"];
-    this.hintTextIndex = Math.floor(Math.random()*this.hintTextList.length);
+    this.hintTextIndex = Math.floor(Math.random() * this.hintTextList.length);
     this.loadedCompleteCount = 0;
     this.loadedTotalCount = SOUND_RESOURCE_NAME.length + IMAGE_RESOURCE_NAME.length;
     this.resourceList = new Array();
@@ -274,8 +274,6 @@ function SnowballFightGame() {
     GameComponent.call(this);
     this.BASE_ENEMY_SCORE = 200;
     this.ENEMY_STEP_SCORE = 50;
-    this.ITEM_RANDOM_TIME_MIN_LIST = [240, 180, 120];
-    this.ITEM_RANDOM_TIME_MAX_LIST = [450, 360, 240];
 
     //初始化全局参数
     this.isGameOver = false;
@@ -293,8 +291,13 @@ function SnowballFightGame() {
     //玩家是否已经提交分数
     this.hasSubmitScore = false;
 
+    //道具相关
+    this.ITEM_RANDOM_TIME_MIN_LIST = [240, 180, 120];
+    this.ITEM_RANDOM_TIME_MAX_LIST = [450, 360, 240];
     this.ITEM_RANDOM_TIME_MIN = this.ITEM_RANDOM_TIME_MIN_LIST[0];
     this.ITEM_RANDOM_TIME_MAX = this.ITEM_RANDOM_TIME_MAX_LIST[0];
+    this.ITEM_BASENUMBER_LIST = [5, 8, 12];
+    this.itemNumber = this.ITEM_BASENUMBER_LIST[0];
     this.itemTickCount = 0;
     this.playerInfoText = "";
     //日志列表
@@ -463,6 +466,10 @@ SnowballFightGame.prototype.loadNewStage = function () {
     //根据阶段设置道具爆率
     this.ITEM_RANDOM_TIME_MIN = this.ITEM_RANDOM_TIME_MIN_LIST[this.stageClass];
     this.ITEM_RANDOM_TIME_MAX = this.ITEM_RANDOM_TIME_MAX_LIST[this.stageClass];
+    this.itemNumber = this.ITEM_BASENUMBER_LIST[this.stageClass] +
+        Math.floor(Math.random() * this.ITEM_BASENUMBER_LIST[this.stageClass]);
+    this.itemTickCount = Math.floor(Math.random() *
+        (this.ITEM_RANDOM_TIME_MAX - this.ITEM_RANDOM_TIME_MIN) + this.ITEM_RANDOM_TIME_MIN);
     this.enemyGroup.clear();
     this.stageState = "STAGE_TEXT";
 };
@@ -491,11 +498,14 @@ SnowballFightGame.prototype.updateMainGame = function () {
         return;
     }
     //道具刷新逻辑
-    if (this.itemTickCount == 0) {
+    if (this.itemTickCount == 0 && this.itemNumber > 0) {
         this.itemTickCount = Math.floor(Math.random() * (this.ITEM_RANDOM_TIME_MAX - this.ITEM_RANDOM_TIME_MIN) + this.ITEM_RANDOM_TIME_MIN);
         this.itemGroup.add(new Item(IMAGE_RESOURCE[WIDGET_IMAGE_PATH]));
+        this.itemNumber--;
     }
-    this.itemTickCount--;
+    else {
+        this.itemTickCount--;
+    }
     this.spriteGroup.flush();
 };
 SnowballFightGame.prototype.updatePlayerInfo = function () {
