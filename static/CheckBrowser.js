@@ -7,9 +7,9 @@ var info = {
     ff:/gecko/.test(ua) && !/webkit/.test(ua)   //匹配Firefox浏览器
 };
 if (info.ie || info.op || info.sa) {
-    window.location = "unsupport.html";
+    window.location = "/static/unsupport.html";
 }
 
 if (!Modernizr.canvas) {
-    window.location = "unsupport.html";
+    window.location = "/static/unsupport.html";
 }
