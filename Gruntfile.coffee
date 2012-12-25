@@ -20,6 +20,7 @@ module.exports = (grunt) ->
           collapseWhitespace: true
         files:
           'static/index.html': 'assets/index.html'
+		  'static/unsupport.html': 'assets/unsupport.html'
     watch:
       js:
         files: ['assets/*.js']

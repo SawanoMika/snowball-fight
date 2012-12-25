@@ -4,4 +4,5 @@ node_modules
 *.sublime-workspace
 static/snowball-fight.min.js
 static/modernizr.custom.79046.js
-index.html
+static/index.html
+static/unsupport.html
