@@ -2,3 +2,6 @@ node_modules
 *.log
 *.sublime-project
 *.sublime-workspace
+static/snowball-fight.min.js
+static/modernizr.custom.79046.js
+index.html

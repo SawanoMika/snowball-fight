@@ -33,9 +33,6 @@ var getCalcFunc = function () {
                     break;
                 case EVENT_GET_ITEM:
                     score += __ITEM_SCORE[__ITEM_LIST.indexOf(info.item)];
-                    if (info.item == "Gold") {
-                        score += info.gold;
-                    }
                     break;
             }
         }
