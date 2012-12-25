@@ -17,7 +17,7 @@ var EXPLOSION_IMAGE_PATH = "image/explosion.png";
 var WIDGET_IMAGE_PATH = "image/widget.png";
 var TEXT_IMAGE_PATH = "image/text.png";
 var GAMEOVER_IMAGE_PATH = ["image/gameover1.png", "image/gameover2.png", "image/gameover3.png"];
-var LOADING_IMAGE_PATH = "image/loading.png";
+var LOADING_IMAGE_PATH = "/static/image/loading.png";
 var SNOW_IMAGE_PATH = "image/snow.png";
 var FONT_FILL_STYLE = ["#FFCC00", "#66FFCC", "#FF99FF"];
 

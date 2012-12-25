@@ -5,7 +5,7 @@
 
 html, body {
 	margin: 0 auto;
-	font-family: MyFont,Microsoft YaHei,Georgia, 'Times New Roman', Times, serif;
+	font-family: "Microsoft YaHei", Georgia, 'Times New Roman', Times, serif;
 	font-size: 18px;
 	color: #FFF59B;
 	text-shadow: 0 0 6px #FFF596;
@@ -226,13 +226,16 @@ height: 57px;
   height:10px;
  }
  
- #rankList th{
+#rankList th{
  font-size:2em;
  }
 
- #rankBackButton{
+#rankBackButton{
 	position:relative;
 	left:260px;
 	top:10px;
-	}
+}
 
+#uyan_frame {
+	margin-top: 300px;
+}
