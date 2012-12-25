@@ -157,14 +157,17 @@ Character.prototype.specialStatusUpdate = function () {
         this.attackType = this.ATTACK_TYPE_NORMAL;
     }
     //冰冻状态倒计数逻辑
-    if (this.isFrozen && this.frozenCount < this.FROZEN_TOTAL_COUNT) {
-        if (this.timer != null) {
-            clearTimeout(this.timer);
+    if (this.isFrozen) {
+        if (this.frozenCount < this.FROZEN_TOTAL_COUNT) {
+            if (this.timer != null) {
+                clearTimeout(this.timer);
+            }
+            this.frozenCount++;
         }
-        this.frozenCount++;
-    }
-    else {
-        this.isFrozen = false;
+        else {
+            this.isDoingAction = false;
+            this.isFrozen = false;
+        }
     }
     //中毒状态倒计数逻辑
     if (this.isPoisoning && this.poisoningCount < this.POISONING_TOTAL_COUNT) {
@@ -339,7 +342,7 @@ Character.prototype.die = function (host) {
 function Player(imageSource, constructInfo, hpTroughGroup) {
     Character.call(this, imageSource, constructInfo);
     this.characterType = this.CHARACTER_TYPE_PLAYER;
-    this.attackType = this.ATTACK_TYPE_NORMAL;
+    this.attackType = this.ATTACK_TYPE_FROZEN;
     this.positionX = 600;
     this.positionY = 413;
     this.shadowOffsetX = -2;
