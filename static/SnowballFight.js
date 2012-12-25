@@ -127,6 +127,15 @@ function LoadingScreen() {
     this.loadingImage = new Image();
     this.loadingImage.src = LOADING_IMAGE_PATH;
     this.showText = "";
+    this.hintTextList = [
+        "火球攻击可以产生范围伤害",
+        "冰球攻击可以让敌人动弹不得",
+        "毒球攻击可以让敌人在一段时间内不断掉血",
+        "短时间内击杀更多敌人可以获得成就加分",
+        "无伤情况下击杀敌人可以获得成就加分",
+        "攻击力、移动速度、雪球速度的提升是永久性的",
+        "每过一关都会恢复少许血量"];
+    this.hintTextIndex = Math.floor(Math.random()*this.hintTextList.length);
     this.loadedCompleteCount = 0;
     this.loadedTotalCount = SOUND_RESOURCE_NAME.length + IMAGE_RESOURCE_NAME.length;
     this.resourceList = new Array();
@@ -141,9 +150,12 @@ LoadingScreen.prototype.draw = function () {
     mainCanvas.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT + 40);
     mainCanvas.fillStyle = "#FFFF00";
     mainCanvas.font = "64px Impact";
-    mainCanvas.fillText(this.showText, 160, 160);
+    mainCanvas.fillText(this.showText, 160, 120);
+    mainCanvas.font = "24px 幼圆";
+    mainCanvas.fillText(this.hintTextList[this.hintTextIndex], 180, 600);
     mainCanvas.restore();
-    mainCanvas.drawImage(this.loadingImage, 180, 200);
+    mainCanvas.drawImage(this.loadingImage, 180, 140);
+
 };
 LoadingScreen.prototype.update = function () {
     if (this.loadedCompleteCount >= this.loadedTotalCount) {
@@ -248,8 +260,8 @@ StoryScreen.prototype.update = function () {
     }
 };
 StoryScreen.prototype.mouseClickEvent = function (e) {
-    if (this.state == 0)
-        this.state = 1;
+    if (storyScreen.state == 0)
+        storyScreen.state = 1;
     else {
         $(window).unbind();
         game = new SnowballFightGame();
@@ -330,7 +342,6 @@ SnowballFightGame.prototype.initialize = function () {
 
     //将精灵加入精灵组
     //精灵实例化
-
     this.moveMarker = new MoveMarker(IMAGE_RESOURCE[WIDGET_IMAGE_PATH]);
     this.selectedRing = new SelectedRing(IMAGE_RESOURCE[WIDGET_IMAGE_PATH]);
     this.energyTrough = new EnergyTrough(IMAGE_RESOURCE[WIDGET_IMAGE_PATH]);
@@ -338,7 +349,6 @@ SnowballFightGame.prototype.initialize = function () {
     this.hpTroughGroup = new RoleGroup("HpTrough");
     this.player = new Player(IMAGE_RESOURCE[ROLES_IMAGE_PATH], {startPosition:new Point(600, 413)}, this.hpTroughGroup);
     this.enemyGroup = new RoleGroup("Enemy");
-//    this.stageText = new StageText(TEXT_IMAGE_PATH, this.stageNum);
 
     this.spriteGroup.add(this.selectedRing);
     this.spriteGroup.add(this.moveMarker);
@@ -601,7 +611,7 @@ SnowballFightGame.prototype.mouseClickEvent = function (e) {
         var mouseX = e.pageX - CANVAS_OFFSET_X;
         var mouseY = e.pageY - CANVAS_OFFSET_Y;
         if (mouseX > 735 && mouseX < 735 + 24 && mouseY > 608 && mouseY < 608 + 24) {
-            game.pause();
+//            game.pause();
         }
     };
     var checkMouseRange = function (e) {
