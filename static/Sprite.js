@@ -48,6 +48,7 @@ function Character(imageSource) {
     this.shadowOffsetX = 0;
     this.shadowOffsetY = 66;
 
+    this.isEnemy = true;
     //人物是否死亡
     this.isDead = false;
     //人物是否正在移动
@@ -212,7 +213,7 @@ Character.prototype.endForce = function (chargedForce) {
     if (this.chargeForce > 0) {
         game.spriteGroup.add(new Snowball(IMAGE_RESOURCE[WIDGET_IMAGE_PATH], {
             positionX:this.positionX,
-            positionY:this.positionY,
+            positionY:this.positionY + (this.isEnemy ? 45 : 0),
             force:chargedForce || this.chargeForce,
             directionToEnemy:(chargedForce == undefined ? true : false),
             host:this
@@ -331,6 +332,7 @@ function Player(imageSource, constructInfo, hpTroughGroup) {
     this.hp = 3000;
     this.MAX_HP = 3000;
     this.INIT_ATTACK = 200;
+    this.isEnemy = false;
 
     this.ckNoDamageAchievement = [false, false, false, false, false, false, false, false];
     this.ckNoDamage = 0;
@@ -465,6 +467,7 @@ Enemy.prototype.update = function () {
         if (!this.isDoingAction) {
             this.setNewAction();
         }
+        //跳跃动作
         if (game.isGameOver) {
             this.isDoingAction = true;
             this.status = this.STATUS_STAND;
