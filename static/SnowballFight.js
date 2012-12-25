@@ -559,7 +559,7 @@ SnowballFightGame.prototype.gameOver = function () {
         if (game.retryButton.isMouseOn) {
             game.restart();
         }
-        else if (game.submitButton.isMouseOn && !this.hasSubmitScore) {
+        else if (game.submitButton.isMouseOn) {
             $("#submitBox").show();
         }
     };

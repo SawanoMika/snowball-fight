@@ -1,5 +1,7 @@
 function submitBoxClickOk() {
-    submitScore();
+    if (!game.hasSubmitScore) {
+        submitScore();
+    }
 }
 
 function submitBoxClickCancel() {
@@ -80,7 +82,6 @@ function submitScore() {
                 }
                 $("#rankTable").append(newtr);
             }
-//            getRank();
             console.info(data);
         },
         error:function (err) {
@@ -103,7 +104,7 @@ function getTop10() {
         data:{},
         success:function (data) {
             for (var i in data[i]) {
-                var rank = parseInt(i)+1;
+                var rank = parseInt(i) + 1;
                 var name = data[i].name;
                 var score = data[i].score;
                 var newtr;
