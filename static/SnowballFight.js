@@ -152,9 +152,10 @@ LoadingScreen.prototype.draw = function () {
     mainCanvas.font = "64px Impact";
     mainCanvas.fillText(this.showText, 160, 120);
     mainCanvas.font = "24px 幼圆";
-    mainCanvas.fillText(this.hintTextList[this.hintTextIndex], 180, 600);
+    mainCanvas.fillText(this.hintTextList[this.hintTextIndex],
+        SCREEN_WIDTH / 2 - this.hintTextList[this.hintTextIndex].length / 2 * 24, 600);
     mainCanvas.restore();
-    mainCanvas.drawImage(this.loadingImage, 180, 140);
+    mainCanvas.drawImage(this.loadingImage, 180, 160);
 
 };
 LoadingScreen.prototype.update = function () {

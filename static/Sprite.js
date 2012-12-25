@@ -193,6 +193,10 @@ Character.prototype.moveUpdate = function () {
         if (this.tickCount % 10 == 0) {
             this.status = (this.status == this.STATUS_MOVE1 ? this.STATUS_MOVE2 : this.STATUS_MOVE1);
         }
+        //通过走路恢复硬直时间
+        if (this.RIGIDITY_TOTAL_COUNT < 45) {
+            this.RIGIDITY_TOTAL_COUNT++;
+        }
         this.tickCount++;
     }
     else {
@@ -270,6 +274,7 @@ Character.prototype.beHit = function (hitPoint, host) {
     if (this.timer != undefined && this.timer != null) {
         clearTimeout(this.timer);
     }
+    //叠加攻击效果
     switch (host.attackType) {
         case this.ATTACK_TYPE_FIRE:
             //火焰爆炸，在雪球逻辑处处理
@@ -283,7 +288,6 @@ Character.prototype.beHit = function (hitPoint, host) {
         case this.ATTACK_TYPE_POISON:
             this.isPoisoning = true;
             this.poisoningCount = 0;
-
             break;
         case this.ATTACK_TYPE_NORMAL:
             break;
@@ -292,6 +296,12 @@ Character.prototype.beHit = function (hitPoint, host) {
     game.seCharge.stop();
     //设置被击中动作并在一定时间之后恢复站立动作
     this.status = this.STATUS_HIT;
+    //硬直平衡性控制，连续打中硬直时间递减
+    if (this.RIGIDITY_TOTAL_COUNT > 15) {
+        this.RIGIDITY_TOTAL_COUNT -= 8;
+    }
+
+    //人物硬直
     this.isRigidity = true;
     this.rigidityCount = 0;
     this.isDoingAction = true;
