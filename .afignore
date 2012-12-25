@@ -3,3 +3,4 @@ config.local
 # ignore dot files
 .*
 *.sublime-*
+assets
