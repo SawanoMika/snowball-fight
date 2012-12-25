@@ -342,7 +342,7 @@ Character.prototype.die = function (host) {
 function Player(imageSource, constructInfo, hpTroughGroup) {
     Character.call(this, imageSource, constructInfo);
     this.characterType = this.CHARACTER_TYPE_PLAYER;
-    this.attackType = this.ATTACK_TYPE_FROZEN;
+    this.attackType = this.ATTACK_TYPE_NORMAL;
     this.positionX = 600;
     this.positionY = 413;
     this.shadowOffsetX = -2;
