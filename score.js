@@ -9,7 +9,7 @@ var getCalcFunc = function () {
     var __ACHIEVEMENT_SCORE = [200, 300, 450, 650, 900, 1200, 1600, 2000, 500, 750, 1000, 1250];
     var __ITEM_LIST = ["Invisible", "Fire", "Frozen", "Poison",
         "HpPotion", "AttackUp", "MoveSpeedUp", "SnowballSpeedUp"];
-    var __ITEM_SCORE = [200, 300, 300, 300, 0, 0, 200, 200, 200];
+    var __ITEM_SCORE = [200, 300, 300, 300, 0, 200, 200, 200];
     var __ENEMY_STEP_SCORE = 50;
     var __BASE_ENEMY_SCORE = 200;
 
