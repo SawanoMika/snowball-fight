@@ -20,6 +20,7 @@ var GAMEOVER_IMAGE_PATH = ["image/gameover1.png", "image/gameover2.png", "image/
 var LOADING_IMAGE_PATH = "/static/image/loading.png";
 var SNOW_IMAGE_PATH = "image/snow.png";
 var MANUAL_IMAGE_PATH = "image/manual.png";
+var ABOUT_IMAGE_PATH = "image/about.png";
 var FONT_FILL_STYLE = ["#FFCC00", "#66FFCC", "#FF99FF"];
 
 //预加载声音资源文件名
@@ -87,7 +88,8 @@ var IMAGE_RESOURCE_NAME = [
     "image/text.png",
     "image/widget.png",
     "image/snow.png",
-    "image/manual.png"
+    "image/manual.png",
+    "image/about.png"
 ];
 var IMAGE_RESOURCE = new Array();
 var IMAGE_RESOURCE_URL = new Array();
@@ -105,6 +107,7 @@ IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[10]] = "http://storage.live.com/items/314
 IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[11]] = "http://storage.live.com/items/314044073BEC6D79!1036";
 IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[12]] = "http://storage.live.com/items/314044073BEC6D79!1810";
 IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[13]] = "http://storage.live.com/items/314044073BEC6D79!2173";
+IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[14]] = "http://storage.live.com/items/314044073BEC6D79!2254";
 
 /*全局静态变量*/
 
@@ -196,12 +199,18 @@ function StartScreen() {
     GameComponent.call(this);
     this.index = 0;
     this.background = new Background(IMAGE_RESOURCE[STARTSCREEN_IMAGE_PATH], true);
+    this.aboutImage = IMAGE_RESOURCE[ABOUT_IMAGE_PATH];
+    this.showAbout = false;
 }
 StartScreen.prototype = new GameComponent();
-StartScreen.prototype.update = function () {};
+StartScreen.prototype.update = function () {
+};
 StartScreen.prototype.draw = function () {
     mainCanvas.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT + 40);
     this.background.draw();
+    if (this.showAbout) {
+        mainCanvas.drawImage(this.aboutImage, 85, 61);
+    }
 };
 StartScreen.prototype.initialize = function () {
     $(window).click(startScreen.mouseClickEvent);
@@ -219,11 +228,14 @@ StartScreen.prototype.mouseClickEvent = function (e) {
         storyScreen = new StoryScreen();
         screenManager.setComponent(storyScreen);
     }
-    else if (mouseX > btnStartX &&
-        mouseX < btnStartX + btnStartW &&
-        mouseY > btnStartY &&
-        mouseY < btnStartY + btnStartH) {
-        //TODO:ABOUT
+    else if (mouseX > btnAboutX &&
+        mouseX < btnAboutX + btnAboutW &&
+        mouseY > btnAboutY &&
+        mouseY < btnAboutY + btnAboutH) {
+        startScreen.showAbout = true;
+    }
+    else if (startScreen.showAbout) {
+        startScreen.showAbout = false;
     }
 };
 

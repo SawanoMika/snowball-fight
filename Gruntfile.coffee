@@ -6,7 +6,7 @@ module.exports = (grunt) ->
         # mangle:
         mangle: true
         # compress: false
-        # beautify: false
+        # beautify: true
         # beautify: false
         #   except: ['jQuery', 'Modenrizr', '$']
         banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' + '<%= grunt.template.today("yyyy-mm-dd") %> */'
