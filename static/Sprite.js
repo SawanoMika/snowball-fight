@@ -157,18 +157,26 @@ Character.prototype.specialStatusUpdate = function () {
         this.attackType = this.ATTACK_TYPE_NORMAL;
     }
     //冰冻状态倒计数逻辑
-    if (this.isFrozen && this.frozenCount < this.FROZEN_TOTAL_COUNT) {
-        if (this.timer != null) {
-            clearTimeout(this.timer);
+    if (this.isFrozen) {
+        if (this.frozenCount < this.FROZEN_TOTAL_COUNT) {
+            if (this.timer != null) {
+                clearTimeout(this.timer);
+            }
+            this.frozenCount++;
         }
-        this.frozenCount++;
-    }
-    else {
-        this.isFrozen = false;
+        else {
+            this.isDoingAction = false;
+            this.isFrozen = false;
+        }
     }
     //中毒状态倒计数逻辑
     if (this.isPoisoning && this.poisoningCount < this.POISONING_TOTAL_COUNT) {
         this.hp -= Math.floor(this.MAX_HP * 0.005);
+        //中毒不会导致死亡
+        if (this.hp <= 1) {
+            this.hp = 1;
+            this.isPoisoning = false;
+        }
         this.poisoningCount++;
     }
     else {
@@ -187,6 +195,10 @@ Character.prototype.moveUpdate = function () {
         this.positionY += this.moveDy;
         if (this.tickCount % 10 == 0) {
             this.status = (this.status == this.STATUS_MOVE1 ? this.STATUS_MOVE2 : this.STATUS_MOVE1);
+        }
+        //通过走路恢复硬直时间
+        if (this.RIGIDITY_TOTAL_COUNT < 45) {
+            this.RIGIDITY_TOTAL_COUNT++;
         }
         this.tickCount++;
     }
@@ -265,6 +277,7 @@ Character.prototype.beHit = function (hitPoint, host) {
     if (this.timer != undefined && this.timer != null) {
         clearTimeout(this.timer);
     }
+    //叠加攻击效果
     switch (host.attackType) {
         case this.ATTACK_TYPE_FIRE:
             //火焰爆炸，在雪球逻辑处处理
@@ -278,7 +291,6 @@ Character.prototype.beHit = function (hitPoint, host) {
         case this.ATTACK_TYPE_POISON:
             this.isPoisoning = true;
             this.poisoningCount = 0;
-
             break;
         case this.ATTACK_TYPE_NORMAL:
             break;
@@ -287,6 +299,12 @@ Character.prototype.beHit = function (hitPoint, host) {
     game.seCharge.stop();
     //设置被击中动作并在一定时间之后恢复站立动作
     this.status = this.STATUS_HIT;
+    //硬直平衡性控制，连续打中硬直时间递减
+    if (this.RIGIDITY_TOTAL_COUNT > 15) {
+        this.RIGIDITY_TOTAL_COUNT -= 8;
+    }
+
+    //人物硬直
     this.isRigidity = true;
     this.rigidityCount = 0;
     this.isDoingAction = true;

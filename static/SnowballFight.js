@@ -19,6 +19,7 @@ var TEXT_IMAGE_PATH = "image/text.png";
 var GAMEOVER_IMAGE_PATH = ["image/gameover1.png", "image/gameover2.png", "image/gameover3.png"];
 var LOADING_IMAGE_PATH = "/static/image/loading.png";
 var SNOW_IMAGE_PATH = "image/snow.png";
+var MANUAL_IMAGE_PATH = "image/manual.png";
 var FONT_FILL_STYLE = ["#FFCC00", "#66FFCC", "#FF99FF"];
 
 //预加载声音资源文件名
@@ -85,7 +86,8 @@ var IMAGE_RESOURCE_NAME = [
     "image/startScreen.png",
     "image/text.png",
     "image/widget.png",
-    "image/snow.png"
+    "image/snow.png",
+    "image/manual.png"
 ];
 var IMAGE_RESOURCE = new Array();
 var IMAGE_RESOURCE_URL = new Array();
@@ -102,6 +104,7 @@ IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[9]] = "http://storage.live.com/items/3140
 IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[10]] = "http://storage.live.com/items/314044073BEC6D79!1035";
 IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[11]] = "http://storage.live.com/items/314044073BEC6D79!1036";
 IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[12]] = "http://storage.live.com/items/314044073BEC6D79!1810";
+IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[13]] = "http://storage.live.com/items/314044073BEC6D79!2173";
 
 /*全局静态变量*/
 
@@ -124,6 +127,15 @@ function LoadingScreen() {
     this.loadingImage = new Image();
     this.loadingImage.src = LOADING_IMAGE_PATH;
     this.showText = "";
+    this.hintTextList = [
+        "火球攻击可以产生范围伤害",
+        "冰球攻击可以让敌人动弹不得",
+        "毒球攻击可以让敌人在一段时间内不断掉血",
+        "短时间内击杀更多敌人可以获得成就加分",
+        "无伤情况下击杀敌人可以获得成就加分",
+        "攻击力、移动速度、雪球速度的提升是永久性的",
+        "每过一关都会恢复少许血量"];
+    this.hintTextIndex = Math.floor(Math.random() * this.hintTextList.length);
     this.loadedCompleteCount = 0;
     this.loadedTotalCount = SOUND_RESOURCE_NAME.length + IMAGE_RESOURCE_NAME.length;
     this.resourceList = new Array();
@@ -138,9 +150,13 @@ LoadingScreen.prototype.draw = function () {
     mainCanvas.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT + 40);
     mainCanvas.fillStyle = "#FFFF00";
     mainCanvas.font = "64px Impact";
-    mainCanvas.fillText(this.showText, 160, 160);
+    mainCanvas.fillText(this.showText, 160, 120);
+    mainCanvas.font = "24px 幼圆";
+    mainCanvas.fillText(this.hintTextList[this.hintTextIndex],
+        SCREEN_WIDTH / 2 - this.hintTextList[this.hintTextIndex].length / 2 * 24, 600);
     mainCanvas.restore();
-    mainCanvas.drawImage(this.loadingImage, 180, 200);
+    mainCanvas.drawImage(this.loadingImage, 180, 160);
+
 };
 LoadingScreen.prototype.update = function () {
     if (this.loadedCompleteCount >= this.loadedTotalCount) {
@@ -214,7 +230,9 @@ StartScreen.prototype.mouseClickEvent = function (e) {
 function StoryScreen() {
     GameComponent.call(this);
     this.text = "";
+    this.state = 0;
     this.textImage = IMAGE_RESOURCE["image/text.png"];
+    this.manual = IMAGE_RESOURCE["image/manual.png"];
     this.positionY = 640;
 }
 StoryScreen.prototype = new GameComponent();
@@ -222,9 +240,15 @@ StoryScreen.prototype.initialize = function () {
     $(window).click(storyScreen.mouseClickEvent);
 };
 StoryScreen.prototype.draw = function () {
-    mainCanvas.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT + 40);
-    mainCanvas.drawImage(this.textImage, 201, 77, 633, 373,
-        80, this.positionY, 633, 373);
+    if (this.state == 0) {
+        mainCanvas.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT + 40);
+        mainCanvas.drawImage(this.textImage, 201, 77, 633, 373,
+            80, this.positionY, 633, 373);
+    }
+    else if (this.state == 1) {
+        mainCanvas.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT + 40);
+        mainCanvas.drawImage(this.manual, 0, 0);
+    }
     mainCanvas.save();
     mainCanvas.font = "32px Impact";
     mainCanvas.fillStyle = "#00FF00";
@@ -232,14 +256,18 @@ StoryScreen.prototype.draw = function () {
     mainCanvas.restore();
 };
 StoryScreen.prototype.update = function () {
-    if (this.positionY > 114) {
+    if (this.state == 0 && this.positionY > 114) {
         this.positionY -= 2;
     }
 };
 StoryScreen.prototype.mouseClickEvent = function (e) {
-    $(window).unbind();
-    game = new SnowballFightGame();
-    screenManager.setComponent(game);
+    if (storyScreen.state == 0)
+        storyScreen.state = 1;
+    else {
+        $(window).unbind();
+        game = new SnowballFightGame();
+        screenManager.setComponent(game);
+    }
 };
 
 //SnowballFightGame.js 打雪仗游戏核心类
@@ -247,8 +275,6 @@ function SnowballFightGame() {
     GameComponent.call(this);
     this.BASE_ENEMY_SCORE = 200;
     this.ENEMY_STEP_SCORE = 50;
-    this.ITEM_RANDOM_TIME_MIN_LIST = [240, 180, 120];
-    this.ITEM_RANDOM_TIME_MAX_LIST = [450, 360, 240];
 
     //初始化全局参数
     this.isGameOver = false;
@@ -266,8 +292,13 @@ function SnowballFightGame() {
     //玩家是否已经提交分数
     this.hasSubmitScore = false;
 
+    //道具相关
+    this.ITEM_RANDOM_TIME_MIN_LIST = [240, 180, 120];
+    this.ITEM_RANDOM_TIME_MAX_LIST = [450, 360, 240];
     this.ITEM_RANDOM_TIME_MIN = this.ITEM_RANDOM_TIME_MIN_LIST[0];
     this.ITEM_RANDOM_TIME_MAX = this.ITEM_RANDOM_TIME_MAX_LIST[0];
+    this.ITEM_BASENUMBER_LIST = [5, 8, 12];
+    this.itemNumber = this.ITEM_BASENUMBER_LIST[0];
     this.itemTickCount = 0;
     this.playerInfoText = "";
     //日志列表
@@ -315,7 +346,6 @@ SnowballFightGame.prototype.initialize = function () {
 
     //将精灵加入精灵组
     //精灵实例化
-
     this.moveMarker = new MoveMarker(IMAGE_RESOURCE[WIDGET_IMAGE_PATH]);
     this.selectedRing = new SelectedRing(IMAGE_RESOURCE[WIDGET_IMAGE_PATH]);
     this.energyTrough = new EnergyTrough(IMAGE_RESOURCE[WIDGET_IMAGE_PATH]);
@@ -323,7 +353,6 @@ SnowballFightGame.prototype.initialize = function () {
     this.hpTroughGroup = new RoleGroup("HpTrough");
     this.player = new Player(IMAGE_RESOURCE[ROLES_IMAGE_PATH], {startPosition:new Point(600, 413)}, this.hpTroughGroup);
     this.enemyGroup = new RoleGroup("Enemy");
-//    this.stageText = new StageText(TEXT_IMAGE_PATH, this.stageNum);
 
     this.spriteGroup.add(this.selectedRing);
     this.spriteGroup.add(this.moveMarker);
@@ -438,6 +467,10 @@ SnowballFightGame.prototype.loadNewStage = function () {
     //根据阶段设置道具爆率
     this.ITEM_RANDOM_TIME_MIN = this.ITEM_RANDOM_TIME_MIN_LIST[this.stageClass];
     this.ITEM_RANDOM_TIME_MAX = this.ITEM_RANDOM_TIME_MAX_LIST[this.stageClass];
+    this.itemNumber = this.ITEM_BASENUMBER_LIST[this.stageClass] +
+        Math.floor(Math.random() * this.ITEM_BASENUMBER_LIST[this.stageClass]);
+    this.itemTickCount = Math.floor(Math.random() *
+        (this.ITEM_RANDOM_TIME_MAX - this.ITEM_RANDOM_TIME_MIN) + this.ITEM_RANDOM_TIME_MIN);
     this.enemyGroup.clear();
     this.stageState = "STAGE_TEXT";
 };
@@ -466,11 +499,14 @@ SnowballFightGame.prototype.updateMainGame = function () {
         return;
     }
     //道具刷新逻辑
-    if (this.itemTickCount == 0) {
+    if (this.itemTickCount == 0 && this.itemNumber > 0) {
         this.itemTickCount = Math.floor(Math.random() * (this.ITEM_RANDOM_TIME_MAX - this.ITEM_RANDOM_TIME_MIN) + this.ITEM_RANDOM_TIME_MIN);
         this.itemGroup.add(new Item(IMAGE_RESOURCE[WIDGET_IMAGE_PATH]));
+        this.itemNumber--;
     }
-    this.itemTickCount--;
+    else {
+        this.itemTickCount--;
+    }
     this.spriteGroup.flush();
 };
 SnowballFightGame.prototype.updatePlayerInfo = function () {
@@ -586,7 +622,7 @@ SnowballFightGame.prototype.mouseClickEvent = function (e) {
         var mouseX = e.pageX - CANVAS_OFFSET_X;
         var mouseY = e.pageY - CANVAS_OFFSET_Y;
         if (mouseX > 735 && mouseX < 735 + 24 && mouseY > 608 && mouseY < 608 + 24) {
-            game.pause();
+//            game.pause();
         }
     };
     var checkMouseRange = function (e) {
