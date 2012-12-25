@@ -19,6 +19,7 @@ var TEXT_IMAGE_PATH = "image/text.png";
 var GAMEOVER_IMAGE_PATH = ["image/gameover1.png", "image/gameover2.png", "image/gameover3.png"];
 var LOADING_IMAGE_PATH = "/static/image/loading.png";
 var SNOW_IMAGE_PATH = "image/snow.png";
+var MANUAL_IMAGE_PATH = "image/manual.png";
 var FONT_FILL_STYLE = ["#FFCC00", "#66FFCC", "#FF99FF"];
 
 //预加载声音资源文件名
@@ -85,7 +86,8 @@ var IMAGE_RESOURCE_NAME = [
     "image/startScreen.png",
     "image/text.png",
     "image/widget.png",
-    "image/snow.png"
+    "image/snow.png",
+    "image/manual.png"
 ];
 var IMAGE_RESOURCE = new Array();
 var IMAGE_RESOURCE_URL = new Array();
@@ -102,6 +104,7 @@ IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[9]] = "http://storage.live.com/items/3140
 IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[10]] = "http://storage.live.com/items/314044073BEC6D79!1035";
 IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[11]] = "http://storage.live.com/items/314044073BEC6D79!1036";
 IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[12]] = "http://storage.live.com/items/314044073BEC6D79!1810";
+IMAGE_RESOURCE_URL[IMAGE_RESOURCE_NAME[13]] = "http://storage.live.com/items/314044073BEC6D79!2173";
 
 /*全局静态变量*/
 
@@ -214,7 +217,9 @@ StartScreen.prototype.mouseClickEvent = function (e) {
 function StoryScreen() {
     GameComponent.call(this);
     this.text = "";
+    this.state = 0;
     this.textImage = IMAGE_RESOURCE["image/text.png"];
+    this.manual = IMAGE_RESOURCE["image/manual.png"];
     this.positionY = 640;
 }
 StoryScreen.prototype = new GameComponent();
@@ -222,9 +227,15 @@ StoryScreen.prototype.initialize = function () {
     $(window).click(storyScreen.mouseClickEvent);
 };
 StoryScreen.prototype.draw = function () {
-    mainCanvas.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT + 40);
-    mainCanvas.drawImage(this.textImage, 201, 77, 633, 373,
-        80, this.positionY, 633, 373);
+    if (this.state == 0) {
+        mainCanvas.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT + 40);
+        mainCanvas.drawImage(this.textImage, 201, 77, 633, 373,
+            80, this.positionY, 633, 373);
+    }
+    else if (this.state == 1) {
+        mainCanvas.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT + 40);
+        mainCanvas.drawImage(this.manual, 0, 0);
+    }
     mainCanvas.save();
     mainCanvas.font = "32px Impact";
     mainCanvas.fillStyle = "#00FF00";
@@ -232,14 +243,18 @@ StoryScreen.prototype.draw = function () {
     mainCanvas.restore();
 };
 StoryScreen.prototype.update = function () {
-    if (this.positionY > 114) {
+    if (this.state == 0 && this.positionY > 114) {
         this.positionY -= 2;
     }
 };
 StoryScreen.prototype.mouseClickEvent = function (e) {
-    $(window).unbind();
-    game = new SnowballFightGame();
-    screenManager.setComponent(game);
+    if (this.state == 0)
+        this.state = 1;
+    else {
+        $(window).unbind();
+        game = new SnowballFightGame();
+        screenManager.setComponent(game);
+    }
 };
 
 //SnowballFightGame.js 打雪仗游戏核心类
