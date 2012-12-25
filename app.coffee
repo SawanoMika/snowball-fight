@@ -44,7 +44,7 @@ db.once 'open', ->
 
 recordScore = (req, res) ->
   score = new Score
-    "ip": req.connection.remoteAddress,
+    "ip": req.get('x-forwarded-for') or req.connection.remoteAddress,
     "user-agent": req.get("User-Agent"),
     "log": req.body.log,
     "mobile": req.body.mobile,

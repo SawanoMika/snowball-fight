@@ -20,7 +20,6 @@ Enemy.prototype.getAIFunc = function (aiLevel) {
                     actionType = _this.ACTION_TYPE_MOVE;
                 }
             }
-//            actionType = _this.ACTION_TYPE_STOP;
             switch (actionType) {
                 case _this.ACTION_TYPE_STOP:
                     //随机停止0.5~3.5秒
@@ -41,12 +40,18 @@ Enemy.prototype.getAIFunc = function (aiLevel) {
                     var sita = Math.random() * 2 * Math.PI;
                     var tx = _this.positionX + _this.width / 2 + range * Math.cos(sita);
                     var ty = _this.positionY + _this.height + range * Math.sin(sita);
+                    var ttl = 0;
                     //目标是非法地点的情况，则重新计算
-                    while (tx < _this.width / 2 || ty < _this.height || ty > -0.75 * tx + SCREEN_HEIGHT-80) {
+                    while (tx < _this.width / 2 || ty < _this.height || ty > -0.75 * tx + SCREEN_HEIGHT - 80) {
                         range = Math.floor(Math.random() * 10 + 10);
                         sita = Math.random() * 2 * Math.PI;
                         tx = _this.positionX + _this.width / 2 + range * Math.cos(sita);
                         ty = _this.positionY + _this.height + range * Math.sin(sita);
+                        ttl++;
+                        if (ttl > 10) {
+                            tx = ty = 80;
+                            break;
+                        }
                     }
                     Character.prototype.moveTo.call(_this, new Point(tx, ty));
                     break;
@@ -82,10 +87,7 @@ Enemy.prototype.getAIFunc = function (aiLevel) {
                     }).bind(_this), Math.floor(Math.random() * 2000) + 500);
                     break;
                 case _this.ACTION_TYPE_ATTACK:
-//                    var dx = game.player.positionX - _this.positionX;
-//                    var dy = game.player.positionY - _this.positionY;
                     _this.timer = setTimeout((function () {
-//                        var d = Math.sqrt(dx * dx + dy * dy);
                         _this.startForce();
                         setTimeout((function () {
                             _this.endForce(Math.floor(Math.random() * 60) + 40);
@@ -99,16 +101,16 @@ Enemy.prototype.getAIFunc = function (aiLevel) {
                     var enemyY = Math.floor(_this.positionY + _this.height);
                     //D1为前后修正参数,D2为水平修正参数
                     var D1 = Math.floor(Math.random() * 50 - 20);
-                    var D2 = 16;
+                    var D2 = 0;
                     var targetX = Math.floor((4 * (enemyY - playerY) + 3 * (playerX + enemyX)) / 6
-                        + D1 * 0.8 - D2 *0.8);
+                        + D1 * 0.8 - D2 * 0.8);
                     var targetY = Math.floor((4 * (playerY + enemyY) + 3 * (enemyX - playerX)) / 8
-                        + D1 * 0.6+D2*0.8);
+                        + D1 * 0.6 + D2 * 0.8);
                     if (targetX > 0 && targetY < _this.height) {
                         targetY = Math.floor(_this.height + 1);
                     }
-                    if (targetX < _this.width/2 && targetY > 0) {
-                        targetX = Math.floor(_this.width/2 + 1);
+                    if (targetX < _this.width / 2 && targetY > 0) {
+                        targetX = Math.floor(_this.width / 2 + 1);
                     }
                     if (targetY > -0.75 * targetX + SCREEN_HEIGHT - 80) {
                         targetX = enemyX;
