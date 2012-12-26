@@ -706,7 +706,7 @@ Enemy.prototype.die = function (host) {
 
     //短时间连杀音效
     var index_ckst = (++host.ckShortTime) - 2;
-    if (index_ckst > 3) index_cknd = 3;
+    if (index_ckst > 3) index_ckst = 3;
     if (index_ckst >= 0 && index_ckst <= 3 && !host.ckShortTimeAchievement[index_ckst]) {
         host.ckShortTimeCount = 0;
         host.ckShortTimeAchievement[index_ckst] = true;
@@ -914,6 +914,9 @@ Snowball.prototype.collisionDetect = function (player, enemies) {
             player.beHit((this.host.attackLevel - 1) *
                 this.host.ATTACK_FACTOR + this.host.INIT_ATTACK, this.host);
             player.ckNoDamage = 0;
+            for (var i in player.ckNoDamageAchievement) {
+                player.ckNoDamageAchievement[i] = false;
+            }
             this.isToDisposed = true;
         }
     }
