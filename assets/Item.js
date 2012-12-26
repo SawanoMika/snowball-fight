@@ -5,16 +5,15 @@ function Item(imageSource) {
     this.ITEM_FIRE = 1;
     this.ITEM_FROZEN = 2;
     this.ITEM_POISON = 3;
-    this.ITEM_GOLD = 4;
-    this.ITEM_HP_POTION = 5;
-    this.ITEM_ATTACK_UP = 6;
-    this.ITEM_MOVE_SPEED_UP = 7;
-    this.ITEM_SNOWBALL_SPEED_UP = 8;
-    this.ITEM_TYPE_LIST = ["Invisible", "Fire", "Frozen", "Poison", "Gold",
+    this.ITEM_HP_POTION = 4;
+    this.ITEM_ATTACK_UP = 5;
+    this.ITEM_MOVE_SPEED_UP = 6;
+    this.ITEM_SNOWBALL_SPEED_UP = 7;
+    this.ITEM_TYPE_LIST = ["Invisible", "Fire", "Frozen", "Poison",
         "HpPotion", "AttackUp", "MoveSpeedUp", "SnowballSpeedUp"];
     this.ITEM_DRAW_TEXT_LIST = ["隐身", "火球攻击", "冰球攻击", "毒球攻击",
-        "SCORE+", "HP+", "攻击力上升", "移动速度上升", "雪球速度上升"];
-    this.ITEM_SCORE = [200, 300, 300, 300, 0, 0, 200, 200, 200];
+        "HP+", "攻击力上升", "移动速度上升", "雪球速度上升"];
+    this.ITEM_SCORE = [200, 300, 300, 300, 0, 200, 200, 200];
     //HP回复量
     this.HP_RESTORE_COUNT = 200;
 
@@ -108,15 +107,6 @@ Item.prototype.gainEffect = function () {
         case this.ITEM_POISON:
             player.setAttackType(player.ATTACK_TYPE_POISON);
             break;
-        case this.ITEM_GOLD:
-            var score = Math.floor(Math.random() * 5) * 100 + 1000;
-            game.LogList.push(new Log(EVENT_GET_ITEM, {
-                stage:game.stageNum,
-                item:this.ITEM_TYPE_LIST[this.itemType],
-                gold:score}));
-            game.gameScore += score;
-            addedText += score;
-            break;
         case this.ITEM_HP_POTION:
             player.hp += this.HP_RESTORE_COUNT;
             if (player.hp > player.MAX_HP) {
@@ -135,12 +125,10 @@ Item.prototype.gainEffect = function () {
             break;
     }
     game.spriteGroup.add(new ItemText(this.ITEM_DRAW_TEXT_LIST[this.itemType] + addedText));
-    if (this.itemType != this.ITEM_GOLD) {
-        game.gameScore += this.ITEM_SCORE[this.itemType];
-        game.LogList.push(new Log(EVENT_GET_ITEM, {
-            stage:game.stageNum,
-            item:this.ITEM_TYPE_LIST[this.itemType]}));
-    }
+    game.gameScore += this.ITEM_SCORE[this.itemType];
+    game.LogList.push(new Log(EVENT_GET_ITEM, {
+        stage:game.stageNum,
+        item:this.ITEM_TYPE_LIST[this.itemType]}));
 };
 //道具与玩家做碰撞检测
 Item.prototype.checkCollision = function (player) {
@@ -159,10 +147,10 @@ Item.prototype.checkCollision = function (player) {
 };
 //道具种类生成器
 Item.prototype.getItemType = function () {
-    var type = Math.floor(Math.random() * 9);
+    var type = Math.floor(Math.random() * this.ITEM_TYPE_LIST.length);
     var r = Math.random();
     if (game.stageNum <= 5) {
-        type = Math.floor(Math.random() * 9);
+        type = Math.floor(Math.random() * this.ITEM_TYPE_LIST.length);
     }
     else if (game.stageNum < 12) {
 
@@ -173,7 +161,7 @@ Item.prototype.getItemType = function () {
     return type;
 }
 
-//ItemText.js 增益类物品精灵类
+//ItemText.js 物品提示文字精灵类
 function ItemText(text) {
     Sprite.call(this);
     this.width = 40;

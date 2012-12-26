@@ -3,13 +3,13 @@ var getCalcFunc = function () {
     var EVENT_ACHIEVEMENT = 1;
     var EVENT_GET_ITEM = 2;
     var EVENT_PLAYER_DIE = 3;
-    var __ACHIEVEMENT_LIST = ["KillingSpree", "Domanating", "MegaKill",
+    var __ACHIEVEMENT_LIST = ["KillingSpree", "Dominating", "MegaKill",
         "Unstoppable", "WickedSick", "MonsterKill", "GodLike", "HolyShit",
         "DoubleKill", "TripleKill", "UltraKill", "Rampage"];
     var __ACHIEVEMENT_SCORE = [200, 300, 450, 650, 900, 1200, 1600, 2000, 500, 750, 1000, 1250];
-    var __ITEM_LIST = ["Invisible", "Fire", "Frozen", "Poison", "Gold",
+    var __ITEM_LIST = ["Invisible", "Fire", "Frozen", "Poison",
         "HpPotion", "AttackUp", "MoveSpeedUp", "SnowballSpeedUp"];
-    var __ITEM_SCORE = [200, 300, 300, 300, 0, 0, 200, 200, 200];
+    var __ITEM_SCORE = [200, 300, 300, 300, 0, 200, 200, 200];
     var __ENEMY_STEP_SCORE = 50;
     var __BASE_ENEMY_SCORE = 200;
 
@@ -33,9 +33,6 @@ var getCalcFunc = function () {
                     break;
                 case EVENT_GET_ITEM:
                     score += __ITEM_SCORE[__ITEM_LIST.indexOf(info.item)];
-                    if (info.item == "Gold") {
-                        score += info.gold;
-                    }
                     break;
             }
         }

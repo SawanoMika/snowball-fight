@@ -6,5 +6,12 @@
     "mongoose": "3.5.x",
     "coffee-script": "1.4.x"
   },
+  "devDependencies": {
+    "grunt": "0.4.x",
+    "grunt-contrib-mincss": "0.3.x",
+    "grunt-contrib-uglify": "0.1.x",
+    "grunt-contrib-watch": "0.1.x",
+    "grunt-contrib-htmlmin": "0.1.x"
+  },
   "engine": "node = 0.8.x"
 }
