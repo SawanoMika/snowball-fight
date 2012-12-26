@@ -6,10 +6,12 @@ var info = {
     ch:/chrome/.test(ua), //匹配Chrome浏览器
     ff:/gecko/.test(ua) && !/webkit/.test(ua)   //匹配Firefox浏览器
 };
-if (info.ie || info.op || info.sa) {
-    window.location = "/static/unsupport.html";
-}
 
 if (!Modernizr.canvas) {
     window.location = "/static/unsupport.html";
 }
+else if (info.ie) {
+    window.location = "/static/unsupport.html";
+}
+
+
