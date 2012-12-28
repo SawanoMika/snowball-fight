@@ -36,6 +36,7 @@ db.once 'open', ->
     name: String,
     ts: Date,
     score: Number
+    log: Array
   # ensure desc index on 'score'
   scoreSchema.index 'score': -1
   Score = mongoose.model 'scores', scoreSchema
