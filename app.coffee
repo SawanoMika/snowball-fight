@@ -1,7 +1,8 @@
 express = require 'express'
 mongoose = require 'mongoose'
 
-app = express.createServer()
+app = express()
+# app = express.createServer()
 
 ############ Configure
 
@@ -122,3 +123,4 @@ app.get '/board', (req, res) ->
 ############ Listen
 
 app.listen process.env.VCAP_APP_PORT or 3000
+console.log 'Server now listening to port 3000'
