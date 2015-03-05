@@ -25,7 +25,8 @@ app.configure 'production', ->
 ############ Routes
 
 app.get '/', (req, res) ->
-  require('fs').readFile __dirname + '/static/index.html', 'utf-8', (err, text) ->
+  #require('fs').readFile __dirname + '/static/index.html', 'utf-8', (err, text) ->
+  require('fs').readFile __dirname + '/assets/index.html', 'utf-8', (err, text) ->
     res.send text
 
 # app.post '/score', (req, res) ->
