@@ -36,8 +36,8 @@ module.exports = (grunt) ->
         files: ['assets/*.html']
         tasks: ['htmlmin']
 
-  grunt.loadNpmTasks 'grunt-contrib-watch'
+#  grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
 #  grunt.loadNpmTasks 'grunt-contrib-mincss'
-  grunt.loadNpmTasks 'grunt-contrib-htmlmin'
-  grunt.registerTask 'default', ['uglify', 'htmlmin', 'watch']
+#  grunt.loadNpmTasks 'grunt-contrib-htmlmin'
+  grunt.registerTask 'default', ['uglify']
